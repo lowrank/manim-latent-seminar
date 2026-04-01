@@ -1,0 +1,21 @@
+# Manim generated media
+media/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Environment
+.env
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -62,7 +62,7 @@ class FullAnimationPAT(VoiceoverScene):
         laser_start = RIGHT * 6 + UP * 0.5
         laser_end = tissue.get_right()
         laser = Arrow(start=laser_start, end=laser_end, color=YELLOW, buff=0)
-        laser_text = Text("Infrared Laser Pulse", font_size=20, color=YELLOW).next_to(laser, UP)
+        laser_text = Text("Infrared Laser Pulse", font_size=40, color=YELLOW).scale(0.5).next_to(laser, UP)
         
         with self.voiceover(text="A short laser pulse is fired into the region.") as tracker:
             self.play(GrowArrow(laser, run_time=tracker.duration/2), Write(laser_text))
@@ -86,7 +86,7 @@ class FullAnimationPAT(VoiceoverScene):
             detector = Square(side_length=0.25, color=GREEN)
             detector.move_to(pos)
             detectors.add(detector)
-        det_label = Text("Ultrasound Detectors", font_size=18, color=GREEN).next_to(detectors, RIGHT, buff=0.3)
+        det_label = Text("Ultrasound Detectors", font_size=54, color=GREEN).scale(0.33).next_to(detectors, RIGHT, buff=0.3)
 
 
         # Acoustic waves and Concurrent Blinking
@@ -165,8 +165,14 @@ class FullAnimationPAT(VoiceoverScene):
 
         coupling_group = VGroup(coupling_label, 
                                 coupling_eq).arrange(DOWN, buff=0.4)
+
+        flu_eq = MathTex(
+            "\\Phi(\\mathbf{r}, t) = \\int_{4\\pi} \\phi(\\mathbf{r}, \\hat{\\Omega}, t) d\\hat{\\Omega}",
+            color=ORANGE,
+            font_size=36
+        ).shift(LEFT * 0.2 + DOWN*0.2)
         
-        with self.voiceover(text="When photons are absorbed by the tissue, the energy is transformed into heat. We denote it by H, which represents the heat source density. It is the product of the absorption coefficient and the optical fluence, which acts as the source for the second part of the model.") as tracker:
+        with self.voiceover(text="When photons are absorbed by the tissue, the energy is transformed into heat. We denote it by H, which represents the heat source density. It is the product of the absorption coefficient and the optical fluence. The fluence is the angular integral of the solution to RTE. The heat source acts as the source for the second part of the model.") as tracker:
             self.play(
                 rte_group.animate.scale(1).to_edge(UP + LEFT, buff=0.5),
                 run_time=2
@@ -188,6 +194,9 @@ class FullAnimationPAT(VoiceoverScene):
             self.wait(0.2)
             self.play(Create(flu_term_box))
             self.play(FadeOut(flu_term_box)) 
+
+            self.play(FadeIn(flu_eq))
+            self.play(flu_eq.animate.scale(1).next_to(coupling_group, DOWN), run_time=2)
 
 
         # 2. Acoustic Wave Equation
@@ -248,7 +257,7 @@ class FullAnimationPAT(VoiceoverScene):
             Dot(radius=0.2, color=ORANGE).move_to(tissue.get_center() + UP*0.8),
             Dot(radius=0.2, color=ORANGE).move_to(tissue.get_center() + LEFT*0.3 + DOWN*0.8),
         )
-        ip_label = Text("Recovered Initial Pressure", font_size=18).next_to(ips, UP, buff=0.5)
+        ip_label = Text("Recovered Initial Pressure", font_size=54).scale(0.33).next_to(ips, UP, buff=0.5)
 
         detectors = VGroup()
         center = tissue.get_center()
@@ -259,7 +268,7 @@ class FullAnimationPAT(VoiceoverScene):
             detector = Square(side_length=0.25, color=GREEN)
             detector.move_to(pos)
             detectors.add(detector)
-        det_label = Text("Ultrasound Detectors", font_size=18, color=GREEN).next_to(detectors, RIGHT, buff=0.3)
+        det_label = Text("Ultrasound Detectors", font_size=54, color=GREEN).scale(0.33).next_to(detectors, RIGHT, buff=0.3)
 
         self.add(tissue, tissue_label, detectors, det_label)
 
@@ -275,9 +284,9 @@ class FullAnimationPAT(VoiceoverScene):
 
         # Speed Comparison Visualization
         speed_comp = VGroup(
-            Text("Light Speed", font_size=20, color=YELLOW),
+            Text("Light Speed", font_size=40, color=YELLOW).scale(0.5),
             Line(RIGHT*3, RIGHT*5, color=YELLOW),
-            Text("Sound Speed", font_size=20, color=BLUE),
+            Text("Sound Speed", font_size=40, color=BLUE).scale(0.5),
             Line(RIGHT*3, RIGHT*5, color=BLUE)
         ).arrange_in_grid(rows=2, cols=2, buff=0.5).to_edge(RIGHT, buff=1).shift(DOWN*1)
         

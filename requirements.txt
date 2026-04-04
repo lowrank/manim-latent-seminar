@@ -1,5 +1,5 @@
 manim
 manim-voiceover[gtts]
-kokoro-mv
+kokoro-manim-voiceover
 numpy
 matplotlib

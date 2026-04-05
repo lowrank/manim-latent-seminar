@@ -1,6 +1,9 @@
 # Manim generated media
 media/
 
+# prelude music
+*.mp3
+
 # Kokoro model
 *.onnx
 *.bin

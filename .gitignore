@@ -4,6 +4,9 @@ media/
 # materials
 materials/
 
+# claude
+session*
+
 # prelude music
 *.mp3
 

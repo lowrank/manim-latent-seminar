@@ -8,5 +8,6 @@ Current list of topics in the video list:
 2. Gaussian Correlation Inequality
 3. Sum of Squares
 4. Sensitivity Conjecture
+5. Lower Bound of Off-diagonal Ramsey Numbers
 
 To run the scripts, the installation of manim is required (Follow the [instructions](https://docs.manim.community/en/stable/installation/conda.html)). 

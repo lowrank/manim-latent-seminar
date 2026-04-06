@@ -112,3 +112,15 @@ content.next_to(title, DOWN, buff=0.5)
 | Final boxed result | 42-48 |
 | Diagram vertex labels | 22-24 |
 | Diagram dot radius | 0.09 |
+
+## Bullet Continuation Lines
+
+When a bulleted list item wraps to a second line, the continuation should be indented to align under the first line's text (past the bullet). Use `$\phantom{\bullet}$\;` for the indent, NOT `$\quad$` (which is too wide):
+
+```python
+# First line with bullet
+Tex(r"$\bullet$ This is the main point about something", font_size=28)
+
+# Continuation line (indented to align under text, not bullet)
+Tex(r"$\phantom{\bullet}$\; that continues on a second line.", font_size=28)
+```

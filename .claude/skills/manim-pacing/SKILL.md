@@ -22,38 +22,56 @@ Use these semantic names when deciding `self.wait()` values. Every pause in a sc
 
 ## Where Each Pause Goes
 
-### Within a Voiceover Block
+**IMPORTANT:** Read the `self.wait()` inside-vs-outside rule in the **manim-voiceover-tts** skill first. Waits inside voiceover blocks behave differently from waits outside them.
+
+### Within a Voiceover Block (Fill During TTS Audio)
+
+Waits inside voiceover blocks serve as **pacing between animations while TTS audio is playing**. They may be clipped if the voiceover audio is shorter than the total animation + wait time.
 
 ```python
 with self.voiceover(text="..."):
     self.play(FadeIn(definition))
-    self.wait(1.0)          # PAUSE_ELEMENT: let viewer read the definition
+    self.wait(1.0)          # PAUSE_ELEMENT: pacing during speech
     self.play(FadeIn(example))
     self.wait(1.5)          # PAUSE_READ: multi-line example to read
     self.play(Write(formula))
     self.wait(3.0)          # PAUSE_KEY_RESULT: important formula
 ```
 
-### Between Voiceover Blocks
+### Outside Voiceover Blocks (Real Silence)
+
+Waits outside voiceover blocks are **real silence with no audio**. Keep them short to avoid awkward dead air.
 
 ```python
 with self.voiceover(text="Here is the theorem..."):
     self.play(Write(theorem))
-    self.wait(3.0)          # PAUSE_KEY_RESULT
 
-# no extra wait needed here; the next voiceover block provides a natural break
+self.wait(1.0)              # Real breathing pause — actual silence
 
 with self.voiceover(text="The proof is short..."):
     self.play(FadeIn(proof))
-    self.wait(3.5)          # PAUSE_BREATHE: dense proof
+
+self.wait(1.0)              # Real breathing pause
+```
+
+### Pass-Only Voiceover Blocks
+
+When a voiceover block has only `pass` inside (no animations — the TTS plays on its own), the post-block wait should be very short since the TTS audio already provides natural pacing:
+
+```python
+with self.voiceover(text="Let's think about why this is true..."):
+    pass
+
+self.wait(0.5)              # Short — TTS already played fully
 ```
 
 ### At Scene Boundaries
 
 ```python
-    self.wait(3.0)          # PAUSE_KEY_RESULT (last result of the scene)
+with self.voiceover(text="And that completes the proof."):
+    self.play(Write(qed))
 
-self.wait(1.5)              # PAUSE_SCENE_END: breathing room before transition
+self.wait(1.0)              # PAUSE_SCENE_END: breathing room before transition
 clear_screen(self)
 ```
 
@@ -132,3 +150,5 @@ text="Sensitivity at an input x counts how many single-bit flips change the outp
 - **`self.wait(2)` after everything**: Monotonous rhythm. Vary pauses by importance.
 - **Skipping `PAUSE_SCENE_END`**: Makes transitions feel jarring.
 - **Long pause after trivial content**: A simple label doesn't need 3 seconds.
+- **Long waits (2-8s) outside voiceover blocks**: Creates awkward dead silence. Outside-block waits should be 0.5-1.5s max.
+- **`self.wait()` at the end of a voiceover block expecting it to pause**: Waits at the end of a voiceover block are often silently clipped. Move them outside the block. See the **manim-voiceover-tts** skill for the full explanation.

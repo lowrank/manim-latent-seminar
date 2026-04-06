@@ -27,20 +27,49 @@ globs: ["*.py"]
 - Use `tex_environment="flushleft"` for multi-line Tex that should be left-aligned internally.
 - **LaTeX concatenation bug**: When Python implicitly concatenates raw strings like `r"\quad"` followed by `r"Q = ..."`, LaTeX sees `\quadQ` (undefined control sequence). Always add a trailing space: `r"\quad "`.
 
-## Animation Patterns
+### LaTeX Pitfalls — MUST AVOID
 
-- Use `Write()` for math equations, `FadeIn()` for text blocks.
-- Use `Circumscribe()` and `Indicate()` to highlight key results.
-- Use `Flash()` for intersection points or key moments.
-- Pair voiceovers with animations using `with self.voiceover(text="..."):` blocks.
-- Add `self.wait()` between major content transitions (see **manim-pacing** skill for specific durations).
-- Clean up with `self.play(FadeOut(...))` before transitioning to new content.
+1. **`\textcolor{red}{...}`**: Causes LaTeX compilation errors because the default Manim LaTeX template does not include the `xcolor` package. Use Manim's `color=` parameter instead:
+   ```python
+   # WRONG — will crash
+   MathTex(r"\textcolor{red}{x^2}")
+   
+   # CORRECT
+   MathTex(r"x^2", color=RED)
+   ```
+
+2. **`\ll` and `\gg`**: These render as parallel lines (like `‖`) in Manim's default LaTeX template, not as "much less than" / "much greater than" symbols. Use plain text in voiceover and avoid in displayed math, or use the word form:
+   ```python
+   # WRONG — renders as parallel lines
+   MathTex(r"n \gg k")
+   
+   # CORRECT — use Tex with words
+   Tex(r"$n$ much larger than $k$", font_size=28)
+   ```
+
+3. **`$\quad$` for bullet continuation indentation**: Too wide. Use `$\phantom{\bullet}$\;` instead for continuation lines that align under bulleted text.
+
+4. **`\quad` concatenation**: `r"\quad"` followed by `r"Q = ..."` produces `\quadQ` (undefined). Always add trailing space: `r"\quad "`.
 
 ## Geometric Diagrams
 
 - Use absolute coordinates for geometry (cones, planes, dots), then reposition the group with `.next_to()`.
 - **Critical**: Create dots and labels AFTER the group is positioned, otherwise they end up at wrong locations.
 - For animated dots on lines, use `line.point_from_proportion()` to get points along the line.
+
+### Arc Positioning — `shift()` vs `move_to()`
+
+**`Arc` with `move_to()` misaligns** because `move_to` centers the bounding box, not the arc center. For half-circles and arcs, use `shift()` instead:
+
+```python
+# WRONG — arc center ends up in the wrong place
+arc = Arc(radius=1, start_angle=0, angle=PI)
+arc.move_to(center_point)
+
+# CORRECT — shift from origin to desired center
+arc = Arc(radius=1, start_angle=0, angle=PI)
+arc.shift(center_point - arc.get_arc_center())
+```
 
 ## Boxed Theorem Cards
 
@@ -69,3 +98,9 @@ card, rect, content = make_theorem_card(text1, text2, color=GREEN, buff=0.3)
 | Warnings / problems | YELLOW / RED |
 | Notes / secondary | GREY_B |
 | Examples | YELLOW |
+
+## Graph Theory Animations
+
+### Random Colorings
+
+When generating random 2-colorings of complete graphs (e.g., K6 edge colorings for Ramsey theory), **test your random seed** to ensure the coloring does not accidentally contain a monochromatic clique you're trying to show doesn't exist. For K6 with red/blue edge colorings, seeds 1, 0, and 5 produce colorings with monochromatic triangles — avoid these if demonstrating triangle-free colorings.

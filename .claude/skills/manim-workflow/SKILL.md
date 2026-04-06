@@ -111,12 +111,20 @@ Do the same before Stage 2 and Stage 3.
 ## Render Command
 
 ```bash
+# Preferred (if conda activate works):
 source activate my-manim-environment && cd /home/lowrank/workplace/work/manim-videos/<ProjectName> && manim render <file>.py <SceneName> -ql --disable_caching
+
+# Fallback (non-interactive shells):
+conda run -n my-manim-environment manim render <file>.py <SceneName> -ql --disable_caching
 ```
 
 ## Conda Environment
 
 - Name: `my-manim-environment` (hyphens)
 - Activate: `source activate my-manim-environment`
+- **Fallback**: If `source activate` fails (e.g., in non-interactive shells or CI), use:
+  ```bash
+  conda run -n my-manim-environment manim render <file>.py <SceneName> -ql --disable_caching
+  ```
 - Manim Community v0.20.1
 - Includes: `manim_voiceover`, `kokoro_mv` (KokoroService)

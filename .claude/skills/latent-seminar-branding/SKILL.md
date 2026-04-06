@@ -63,6 +63,21 @@ Every Latent Seminar video should follow this structure:
 7. **Application** — Concrete worked example
 8. **Summary** — Recap with key takeaway
 
+### Opening Line Requirement
+
+**The first voiceover after the prelude MUST begin with "Welcome to Latent Seminar."** This is a required brand convention for every video.
+
+```python
+# Right after self.play_prelude():
+with self.voiceover(
+    text="Welcome to Latent Seminar. "
+         "Today we explore a breakthrough result in Ramsey theory..."
+):
+    self.play(Write(title))
+```
+
+This ensures consistent branding across all videos in the series.
+
 ## Audience
 
 - Target: **general graduate students** (not specialists)

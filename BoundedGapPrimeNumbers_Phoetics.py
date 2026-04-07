@@ -24,8 +24,8 @@ PRONUNCIATIONS = {
     "Goldston": "Gold-stone",
     "Pintz": "Pints",
     "Yildirim": "Yil-deh-rim",
-    "Bombieri": "Bom-bee-air-ee",
-    "Vinogradov": "Vee-no-grah-dov",
+    "Bombieri": "Bom-beer-ee",
+    "Vinogradov": "Veeno-gradov",
     "Deligne": "Deh-leen",
     "Maynard": "May-nard",
     "Elliott": "El-ee-ott",
@@ -34,7 +34,7 @@ PRONUNCIATIONS = {
     "Dirichlet": "Dee-ree-shlay",
     "Kloosterman": "Kloos-ter-mahn",
     "Cauchy": "Co-shee",
-    "Schwarz": "Shvarts",
+    "Schwarz": "Shworts",
     "Weil": "Vile",
     "Polymath": "Pol-ee-math",
 
@@ -59,8 +59,14 @@ PRONUNCIATIONS = {
     "mid": "divides",
     "cong": "is congruent to",
     "ll": "is much less than",
+    "gg": "is much greater than",
     "sup": "supremum",
 }
+
+SUBSTRING_REPLACEMENTS = [
+    (r"\\gg", "is much greater than"),
+    (r"n-th", "enth"),
+]
 
 # Words to keep in subcaption but replace in TTS
 # These are LaTeX-like tokens that appear in voiceover text
@@ -78,6 +84,8 @@ LATEX_PATTERNS = {
     r"\$\\vartheta\$": "theta",
     r"\$\\mathbb\{Z\}\$": "the integers Z",
     r"\$\\mathbb\{F\}\$": "the field F",
+    r"\$a\$": "A",
+    r"\$q\$": "Q",
 }
 
 
@@ -85,12 +93,14 @@ def get_phonetic_text(text: str) -> str:
     """Convert text to phonetic spelling for TTS pronunciation."""
     result = text
 
-    # Apply direct word replacements
     for word, phonetic in PRONUNCIATIONS.items():
-        result = result.replace(word, phonetic)
+        result = re.sub(r'\b' + re.escape(word) + r'\b', phonetic, result)
 
     # Apply LaTeX pattern replacements
     for pattern, replacement in LATEX_PATTERNS.items():
+        result = re.sub(pattern, replacement, result)
+
+    for pattern, replacement in SUBSTRING_REPLACEMENTS:
         result = re.sub(pattern, replacement, result)
 
     return result

@@ -20,7 +20,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
     def construct(self):
         self.set_speech_service(KokoroService(voice="af_heart", lang="en-us"))
-        self.play_prelude()
+#        self.play_prelude()
 
         # === Intro / Title Card ===
         self.intro()
@@ -264,7 +264,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         erat_content = VGroup(erat_label, step1, step2, step3)
         erat_content.arrange(DOWN, aligned_edge=LEFT, buff=0.35)
-        erat_content.to_edge(LEFT, buff=0.8).shift(UP * 0.5)
+        erat_content.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=0.8)
 
         # Sieve visualization: numbers 1-30 in a grid
         numbers_grid = VGroup()
@@ -276,7 +276,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             numbers_grid.add(cell)
 
         numbers_grid.arrange_in_grid(rows=3, cols=10, buff=0.1)
-        numbers_grid.to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
+        numbers_grid.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.6)
 
         composites_2 = {4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30}
         composites_3 = {9, 15, 21, 27}
@@ -386,7 +386,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         modern_content = VGroup(modern, weight_note, goal_note)
         modern_content.arrange(DOWN, aligned_edge=LEFT, buff=0.35)
-        modern_content.to_edge(LEFT, buff=0.8).shift(UP * 0.5)
+        modern_content.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=0.8)
 
         # Sieve visualization: numbers 1-30 in a grid
         numbers_grid = VGroup()
@@ -398,7 +398,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             numbers_grid.add(cell)
 
         numbers_grid.arrange_in_grid(rows=3, cols=10, buff=0.1)
-        numbers_grid.to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
+        numbers_grid.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.6)
 
         with self.voiceover(
             text=get_phonetic_text("Modern sieve methods are more sophisticated. "
@@ -479,11 +479,10 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         content = VGroup(motivation, bad_example, def_text, cond_text)
         content.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
+        content.next_to(header, DOWN, buff=0.5).set_x(0)
         center_mathtex(content)
 
-        # Bad tuple {0,1} mod 2: hits all classes
+        # Bad tuple {0,1} mod 2: hits all classes - use VGroup for proper spacing
         bad_mod2_label = Tex(r"$\{0,1\} \bmod 2$:", font_size=22)
 
         def make_residue_classes(p, hits, size=0.3):
@@ -503,9 +502,9 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             return group
 
         bad_mod2_circles = make_residue_classes(2, {0, 1}, size=0.25)
-        bad_mod2_circles.next_to(bad_mod2_label, RIGHT, buff=0.3)
         bad_mod2_group = VGroup(bad_mod2_label, bad_mod2_circles)
-        bad_mod2_group.set_x(0)
+        bad_mod2_group.arrange(RIGHT, buff=0.3)
+        bad_mod2_group.set_x(0).next_to(bad_example, DOWN, buff=0.4)
 
         with self.voiceover(
             text=get_phonetic_text("Now we come to a central concept: admissible tuples. "
@@ -568,36 +567,33 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        # Left: good example text
-        example = Tex(
-            r"Good: $\mathcal{H} = \{0, 2, 6\}$",
-            font_size=30,
-            color=GREEN,
+        # Left column: text descriptions - use VGroup for proper arrangement
+        left_items = VGroup(
+            Tex(
+                r"Good: $\mathcal{H} = \{0, 2, 6\}$",
+                font_size=30,
+                color=GREEN,
+            ),
+            Tex(
+                r"$\bmod 2$: $\{0, 0, 0\}$ — 1 of 2 classes",
+                font_size=22,
+                color=TEAL,
+            ),
+            Tex(
+                r"$\bmod 3$: $\{0, 2, 0\}$ — 2 of 3 classes",
+                font_size=22,
+                color=TEAL,
+            ),
+            Tex(
+                r"$\bmod 5$: $\{0, 2, 1\}$ — 3 of 5 classes",
+                font_size=22,
+                color=TEAL,
+            ),
         )
-        example.set_x(-2.5).shift(UP * 2.0)
+        left_items.arrange(DOWN, buff=0.35, aligned_edge=LEFT)
+        left_items.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=0.8)
 
-        mod2 = Tex(
-            r"$\bmod 2$: $\{0, 0, 0\}$ — 1 of 2 classes",
-            font_size=24,
-            color=TEAL,
-        )
-        mod2.set_x(-2.5).shift(UP * 1.2)
-
-        mod3 = Tex(
-            r"$\bmod 3$: $\{0, 2, 0\}$ — 2 of 3 classes",
-            font_size=24,
-            color=TEAL,
-        )
-        mod3.set_x(-2.5).shift(UP * 0.5)
-
-        mod5 = Tex(
-            r"$\bmod 5$: $\{0, 2, 1\}$ — 3 of 5 classes",
-            font_size=24,
-            color=TEAL,
-        )
-        mod5.set_x(-2.5).shift(DOWN * 0.2)
-
-        # Right: residue class visualizations
+        # Right column: residue class visualizations (stacked vertically, centered on right half)
         def make_residue_classes(p, hits, size=0.3):
             group = VGroup()
             for i in range(p):
@@ -611,26 +607,29 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                 label = MathTex(str(i), font_size=16)
                 label.move_to(circle.get_center())
                 group.add(VGroup(circle, label))
-            group.arrange(RIGHT, buff=0.15)
+            group.arrange(RIGHT, buff=0.1)
             return group
 
-        good_mod2_label = Tex(r"$\{0,2,6\} \bmod 2$:", font_size=20)
-        good_mod2_circles = make_residue_classes(2, {0}, size=0.35)
+        # Stack residue visuals vertically on the right half
+        good_mod2_label = Tex(r"$\{0,2,6\} \bmod 2$:", font_size=18)
+        good_mod2_circles = make_residue_classes(2, {0}, size=0.3)
         good_mod2_group = VGroup(good_mod2_label, good_mod2_circles)
-        good_mod2_group.arrange(RIGHT, buff=0.3)
-        good_mod2_group.set_x(2.5).shift(UP * 1.8)
+        good_mod2_group.arrange(RIGHT, buff=0.2)
 
-        good_mod3_label = Tex(r"$\{0,2,6\} \bmod 3$:", font_size=20)
-        good_mod3_circles = make_residue_classes(3, {0, 2}, size=0.3)
+        good_mod3_label = Tex(r"$\{0,2,6\} \bmod 3$:", font_size=18)
+        good_mod3_circles = make_residue_classes(3, {0, 2}, size=0.25)
         good_mod3_group = VGroup(good_mod3_label, good_mod3_circles)
-        good_mod3_group.arrange(RIGHT, buff=0.3)
-        good_mod3_group.set_x(2.5).shift(UP * 0.5)
+        good_mod3_group.arrange(RIGHT, buff=0.2)
 
-        good_mod5_label = Tex(r"$\{0,2,6\} \bmod 5$:", font_size=20)
-        good_mod5_circles = make_residue_classes(5, {0, 1, 2}, size=0.25)
+        good_mod5_label = Tex(r"$\{0,2,6\} \bmod 5$:", font_size=18)
+        good_mod5_circles = make_residue_classes(5, {0, 1, 2}, size=0.2)
         good_mod5_group = VGroup(good_mod5_label, good_mod5_circles)
-        good_mod5_group.arrange(RIGHT, buff=0.3)
-        good_mod5_group.set_x(2.5).shift(DOWN * 1.0)
+        good_mod5_group.arrange(RIGHT, buff=0.2)
+
+        # Stack vertically on right side
+        right_stack = VGroup(good_mod2_group, good_mod3_group, good_mod5_group)
+        right_stack.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        right_stack.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.8)
 
         with self.voiceover(
             text=get_phonetic_text("For example, the tuple zero, two, six is admissible. "
@@ -641,9 +640,9 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "so they only hit one residue class."
         ):
             self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(example), run_time=0.8)
+            self.play(FadeIn(left_items[0]), run_time=0.8)
             self.play(FadeIn(good_mod2_label), FadeIn(good_mod2_circles), run_time=1.0)
-            self.play(FadeIn(mod2), run_time=0.8)
+            self.play(FadeIn(left_items[1]), run_time=0.8)
 
         self.wait(0.3)
 
@@ -656,7 +655,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "being prime simultaneously."
         ):
             self.play(FadeIn(good_mod3_label), FadeIn(good_mod3_circles), run_time=1.0)
-            self.play(FadeIn(mod3), run_time=0.8)
+            self.play(FadeIn(left_items[1]), run_time=0.8)
 
         self.wait(0.3)
 
@@ -667,7 +666,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "Again, no obstruction."
         ):
             self.play(FadeIn(good_mod5_label), FadeIn(good_mod5_circles), run_time=1.0)
-            self.play(FadeIn(mod5), run_time=0.8)
+            self.play(FadeIn(left_items[2]), run_time=0.8)
 
         self.wait(1.0)
         clear_screen(self)
@@ -684,66 +683,41 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         idea = Tex(
             r"Weight integers by how ``prime-rich'' they are",
-            font_size=24,
+            font_size=26,
             color=TEAL,
         )
         idea.next_to(header, DOWN, buff=0.4)
 
-        # Left: equation
-        sum_label = Tex(
-            r"Weighted sum:",
+        sum_label = Tex(r"Weighted sum:", font_size=24)
+        sum_eq = MathTex(
+            r"S = \sum_{n \leq x} \left( \sum_{i=1}^{k} \Lambda(n + h_i) - \rho \right) w(n)^2",
             font_size=22,
         )
-        sum_label.shift(UP * 1.2).set_x(-3.0)
-
-        sum_eq = MathTex(
-            r"S = \sum_{n \leq x} "
-            r"\left( \sum_{i=1}^{k} ",
-            r"\Lambda",
-            r"(n + h_i) - ",
-            r"\rho",
-            r" \right) ",
-            r"w(n)^2",
-            font_size=24,
-        )
-        sum_eq.next_to(sum_label, DOWN, buff=0.15, aligned_edge=LEFT)
 
         left_group = VGroup(sum_label, sum_eq)
-        left_group.set_x(-3.0).shift(UP * 0.5)
+        left_group.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
 
-        # Right: definitions stacked vertically
-        defs_y = 1.5
-        defs_x = 1.5
+        lambda_def = MathTex(r"\Lambda(n) = \begin{cases} \log p & n = p^m \\ 0 & \text{otherwise} \end{cases}", font_size=20)
+        lambda_label = Tex(r"von Mangoldt", font_size=18, color=GRAY)
 
-        lambda_def = MathTex(
-            r"\Lambda(n) = \begin{cases} \log p & n = p^m \\ 0 & \text{otherwise} \end{cases}",
-            font_size=18,
+        weight_def = MathTex(r"w(n) = \sum_{d \mid P(n)} \lambda_d", font_size=20)
+        weight_label = Tex(r"sieve weight", font_size=18, color=GRAY)
+
+        rho_def = MathTex(r"\rho = \text{threshold}", font_size=20)
+        rho_label = Tex(r"$S>0 \Rightarrow >\rho$ primes", font_size=18, color=GREEN)
+
+        right_group = VGroup(
+            VGroup(lambda_def, lambda_label),
+            VGroup(weight_def, weight_label),
+            VGroup(rho_def, rho_label),
         )
-        lambda_def.set_x(defs_x).shift(UP * defs_y)
-        lambda_label = Tex(r"von Mangoldt", font_size=16, color=GRAY)
-        lambda_label.next_to(lambda_def, DOWN, buff=0.1)
+        for item in right_group:
+            item.arrange(RIGHT, buff=0.2)
+        right_group.arrange(DOWN, buff=0.4)
 
-        weight_def = MathTex(
-            r"w(n) = \sum_{d \mid P(n)} \lambda_d",
-            font_size=18,
-        )
-        weight_def.set_x(defs_x).shift(UP * (defs_y - 1.3))
-        weight_label = Tex(r"sieve weight", font_size=16, color=GRAY)
-        weight_label.next_to(weight_def, DOWN, buff=0.1)
-
-        rho_def = MathTex(
-            r"\rho = \text{threshold}",
-            font_size=18,
-        )
-        rho_def.set_x(defs_x).shift(UP * (defs_y - 2.6))
-        rho_label = Tex(r"$S>0 \Rightarrow >\rho$ primes", font_size=16, color=GREEN)
-        rho_label.next_to(rho_def, DOWN, buff=0.1)
-
-        right_content = VGroup(
-            lambda_def, lambda_label,
-            weight_def, weight_label,
-            rho_def, rho_label,
-        )
+        main_content = VGroup(left_group, right_group)
+        main_content.arrange(RIGHT, buff=1.8)
+        main_content.next_to(idea, DOWN, buff=0.5)
 
         with self.voiceover(
             text=get_phonetic_text("The G P Y method, named after Goldston, Pintz, and Yildirim, "
@@ -833,36 +807,24 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         conclusion = MathTex(
             r"S > 0 \implies \exists\, n \text{ with } > \rho \text{ primes among } \{n+h_i\}",
-            font_size=26,
+            font_size=24,
             color=GREEN,
         )
         takeaway = Tex(
             r"Set $\rho = 1$ to guarantee two primes simultaneously",
-            font_size=26,
+            font_size=22,
             color=TEAL,
         )
         barrier_note = Tex(
             r"But proving $S > 0$ requires $\theta > 1/2$",
-            font_size=24,
+            font_size=20,
             color=RED,
         )
 
         content = VGroup(conclusion, takeaway, barrier_note)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.4)
-        content.move_to(ORIGIN).shift(UP * 0.5)
-
-        with self.voiceover(
-            text=get_phonetic_text("So the conclusion is clear. "
-                 "If we can make this weighted sum positive, "
-                 "then there exists some n where more than rho of the shifts are prime."),
-            subcaption="So the conclusion is clear. "
-                 "If we can make this weighted sum positive, "
-                 "then there exists some n where more than rho of the shifts are prime."
-        ):
-            self.play(Write(header), run_time=1.5)
-            self.play(FadeIn(conclusion), run_time=2.0)
-
-        self.wait(0.5)
+        content.arrange(DOWN, aligned_edge=LEFT, buff=0.35)
+        content.next_to(header, DOWN, buff=0.5)
+        content.set_x(0)
 
         with self.voiceover(
             text=get_phonetic_text("So the conclusion is clear. "
@@ -914,69 +876,72 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         ap_label = Tex(
             r"\textbf{Arithmetic progressions:} $a, a+q, a+2q, \dots$",
-            font_size=28,
+            font_size=24,
         )
-        ap_label.to_edge(LEFT, buff=0.8).shift(UP * 2.8)
 
         dirichlet_note = Tex(
             r"Dirichlet: each class has infinitely many primes",
-            font_size=22,
+            font_size=18,
             color=GRAY,
         )
-        dirichlet_note.next_to(ap_label, DOWN, buff=0.4, aligned_edge=LEFT)
 
         intuition_note = Tex(
             r"Primes split roughly evenly among the $\phi(q)$ classes",
-            font_size=22,
+            font_size=18,
             color=TEAL,
         )
-        intuition_note.next_to(dirichlet_note, DOWN, buff=0.4, aligned_edge=LEFT)
+
+        left_content = VGroup(ap_label, dirichlet_note, intuition_note)
+        left_content.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+        left_content.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=0.8)
 
         # Right side: residue class buckets mod 7
         q = 7
         coprime_classes = [1, 2, 3, 4, 5, 6]
-        primes_up_to_100 = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+        primes_up_to_100 = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229]
 
-        # Create bucket containers for each residue class
         buckets = VGroup()
         bucket_labels = VGroup()
         bucket_counts = VGroup()
-        bucket_dots = VGroup()  # will hold the accumulating dots
+        bucket_dots = VGroup()
         bar_colors = [BLUE, GREEN, YELLOW, TEAL, PURPLE, MAROON]
 
         for i, a in enumerate(coprime_classes):
-            # Container outline
-            container = Rectangle(width=0.75, height=2.5, fill_color=BLACK, fill_opacity=0, stroke_width=2, stroke_color=GRAY)
-            container.move_to([i * 1.0 - 2.5, 0, 0])
+            container = Rectangle(width=0.5, height=2.8, fill_color=BLACK, fill_opacity=0, stroke_width=2, stroke_color=GRAY)
+            container.move_to([i * 0.7 - 1.8, 0, 0])
             buckets.add(container)
 
-            # Label at bottom
-            lbl = MathTex(f"{a}", font_size=22)
-            lbl.next_to(container, DOWN, buff=0.15)
+            lbl = MathTex(f"{a}", font_size=18)
+            lbl.next_to(container, DOWN, buff=0.1)
             bucket_labels.add(lbl)
 
-            # Count label at top
-            cnt = Tex("0", font_size=18, color=bar_colors[i])
-            cnt.next_to(container, UP, buff=0.1)
+            cnt = Tex("0", font_size=14, color=bar_colors[i])
+            cnt.next_to(container, UP, buff=0.05)
             bucket_counts.add(cnt)
 
-        # Title for buckets
-        bucket_title = Tex(r"Primes mod $7$ — filling buckets", font_size=22, color=GRAY)
-        bucket_title.next_to(buckets, UP, buff=0.6)
+        bucket_title = Tex(r"Primes mod $7$", font_size=18, color=GRAY)
+        bucket_title.next_to(buckets, UP, buff=0.3)
 
-        # Equation at bottom
-        dirichlet = MathTex(
+        right_content = VGroup(bucket_title, buckets, bucket_labels, bucket_counts)
+        right_content.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.8)
+
+        dirichlet_eq = MathTex(
             r"\pi(x;q,a) \approx \frac{\pi(x)}{\phi(q)}",
-            font_size=30,
+            font_size=28,
         )
-        dirichlet.to_edge(DOWN, buff=0.6)
+        dirichlet_card, dirichlet_rect, dirichlet_content = make_theorem_card(
+            dirichlet_eq,
+            color=GREEN,
+            buff=0.3,
+        )
+        dirichlet_card.next_to(header, DOWN, buff=0.8).set_x(0)
 
         with self.voiceover(
             text=get_phonetic_text("To make the G P Y sum positive, "
                  "we need to understand how primes are distributed "
                  "in arithmetic progressions. "
                  "An arithmetic progression is a sequence like "
-                 "a, a plus q, a plus two q, and so on."),
+                 "A, A-plus q, A-plus two q, and so on."),
             subcaption="To make the G P Y sum positive, "
                  "we need to understand how primes are distributed "
                  "in arithmetic progressions. "
@@ -985,7 +950,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         ):
             self.play(Write(header), run_time=1.5)
             self.wait(0.5)
-            self.play(FadeIn(ap_label), run_time=1.5)
+            self.play(FadeIn(left_content[0]), run_time=1.5)
 
         self.wait(0.5)
 
@@ -1003,11 +968,11 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "They spread out roughly evenly "
                  "among the phi of q residue classes that are coprime to q."
         ):
-            self.play(FadeIn(dirichlet_note), run_time=1.5)
+            self.play(FadeIn(left_content[1]), run_time=1.5)
             self.wait(0.5)
             self.play(FadeIn(buckets), FadeIn(bucket_labels), FadeIn(bucket_title), run_time=1.5)
             self.wait(0.5)
-            self.play(FadeIn(intuition_note), run_time=1.5)
+            self.play(FadeIn(left_content[2]), run_time=1.5)
 
         self.wait(0.5)
 
@@ -1035,9 +1000,8 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                     counts[idx] += 1
 
                     # Create a small dot for this prime
-                    dot = Dot(radius=0.06, color=bar_colors[idx])
-                    # Stack dots from bottom up inside the container
-                    dot.move_to(buckets[idx].get_center() + DOWN * 1.1 + UP * (counts[idx] - 1) * 0.12)
+                    dot = Dot(radius=0.04, color=bar_colors[idx])
+                    dot.move_to(buckets[idx].get_center() + DOWN * 0.8 + UP * (counts[idx] - 1) * 0.12)
 
                     # Update count label
                     new_cnt = Tex(str(counts[idx]), font_size=18, color=bar_colors[idx])
@@ -1051,7 +1015,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                     bucket_counts[idx] = new_cnt
 
             self.wait(0.5)
-            self.play(FadeIn(dirichlet), run_time=2.0)
+            self.play(FadeIn(dirichlet_card), run_time=2.0)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1066,67 +1030,65 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        # Top: error term definition (full width)
         error_label = Tex(
             r"\textbf{Error term:}",
-            font_size=28,
+            font_size=26,
         )
-        error_label.to_edge(LEFT, buff=0.8).shift(UP * 1.8)
-
         error_def = MathTex(
             r"E(x;q,a) = \pi(x;q,a) - \frac{\pi(x)}{\phi(q)}",
-            font_size=28,
+            font_size=22,
         )
-        error_def.next_to(error_label, DOWN, buff=0.3, aligned_edge=LEFT)
-
         error_note = Tex(
             r"Deviation from the expected count",
-            font_size=20,
-            color=GRAY,
-        )
-        error_note.next_to(error_def, DOWN, buff=0.2, aligned_edge=LEFT)
-
-        # Bottom: theta definition
-        theta_label = Tex(
-            r"\textbf{Level of distribution $\theta$:}",
-            font_size=28,
-        )
-        theta_label.to_edge(LEFT, buff=0.8).shift(DOWN * 0.5)
-
-        theta_def = MathTex(
-            r"\theta = \sup \left\{ \vartheta : \sum_{q \leq x^\vartheta} "
-            r"\max_a |E(x;q,a)| \text{ is small} \right\}",
-            font_size=20,
-        )
-        theta_def.next_to(theta_label, DOWN, buff=0.3, aligned_edge=LEFT)
-
-        theta_note = Tex(
-            r"Average error over all moduli $q$ up to $x^\vartheta$",
             font_size=18,
             color=GRAY,
         )
-        theta_note.next_to(theta_def, DOWN, buff=0.2, aligned_edge=LEFT)
+        error_content = VGroup(error_label, error_def, error_note)
+        error_content.arrange(DOWN, buff=0.15)
+        error_content.next_to(header, DOWN, buff=0.4)
 
-        # Right side: importance statements
-        importance_box = RoundedRectangle(
-            width=5.0, height=1.8, corner_radius=0.15,
-            color=TEAL, fill_opacity=0.08, stroke_width=2,
+        theta_label = Tex(
+            r"\textbf{Level of distribution $\theta$:}",
+            font_size=26,
         )
-        importance_box.to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
+        theta_def = MathTex(
+            r"\theta = \sup \left\{ \vartheta : \sum_{q \leq x^\vartheta} "
+            r"\max_a |E(x;q,a)| \text{ is small} \right\}",
+            font_size=18,
+        )
+        theta_note = Tex(
+            r"Average error over all moduli $q$ up to $x^\vartheta$",
+            font_size=16,
+            color=GRAY,
+        )
+        theta_content = VGroup(theta_label, theta_def, theta_note)
+        theta_content.arrange(DOWN, buff=0.15)
 
         imp1 = Tex(
             r"Larger $\theta$ $\Rightarrow$ control over larger moduli",
-            font_size=22,
+            font_size=20,
             color=TEAL,
         )
         imp2 = Tex(
             r"$\theta > 1/2$ $\Rightarrow$ bounded prime gaps",
-            font_size=22,
+            font_size=20,
             color=GREEN,
         )
         imp_group = VGroup(imp1, imp2)
-        imp_group.arrange(DOWN, buff=0.3)
+        imp_group.arrange(DOWN, buff=0.2)
+
+        importance_box = RoundedRectangle(
+            width=5.5, height=1.2, corner_radius=0.15,
+            color=TEAL, fill_opacity=0.08, stroke_width=2,
+        )
+        importance_box.set_width(imp_group.get_width() + 0.6)
+        importance_box.set_height(imp_group.get_height() + 0.4)
+        importance_box.next_to(theta_content, DOWN, buff=0.4)
         imp_group.move_to(importance_box.get_center())
+
+        main_content = VGroup(error_content, theta_content, importance_box)
+        main_content.arrange(DOWN, buff=0.35)
+        main_content.set_x(0)
 
         with self.voiceover(
             text=get_phonetic_text("Now we can define the level of distribution precisely. "
@@ -1282,19 +1244,19 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         )
         note.next_to(header, DOWN, buff=0.4).set_x(0)
 
-        # Visual: theta scale centered on screen
+        # Visual: theta scale — reduced length to fit better
         theta_line = NumberLine(
             x_range=[0, 1, 0.5],
-            length=8,
+            length=6,
             include_ticks=True,
             include_numbers=True,
             font_size=32,
-        ).move_to(ORIGIN)
+        ).shift(DOWN * 0.3)
 
-        # Half barrier line — tall, clearly visible
+        # Half barrier line
         half_mark = DashedLine(
-            start=theta_line.n2p(0.5) + UP * 2.5,
-            end=theta_line.n2p(0.5) + DOWN * 2.5,
+            start=theta_line.n2p(0.5) + UP * 1.8,
+            end=theta_line.n2p(0.5) + DOWN * 1.8,
             color=RED,
             stroke_width=3,
             dash_length=0.1,
@@ -1302,37 +1264,37 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         half_label = Tex(r"$\theta = 1/2$", font_size=28, color=RED)
         half_label.next_to(half_mark, UP, buff=0.1)
 
-        # BV region — well below the number line
+        # BV region — below the line
         bv_rect = Rectangle(
-            width=4.0,
-            height=0.6,
+            width=3.0,
+            height=0.5,
             fill_color=BLUE,
             fill_opacity=0.15,
             stroke_color=BLUE,
             stroke_width=2,
         )
-        bv_rect.move_to(theta_line.n2p(0.25) + DOWN * 1.8)
-        bv_label = Tex(r"Bombieri--Vinogradov: known", font_size=24, color=BLUE)
+        bv_rect.move_to(theta_line.n2p(0.25) + DOWN * 1.2)
+        bv_label = Tex(r"Bombieri--Vinogradov", font_size=22, color=BLUE)
         bv_label.move_to(bv_rect.get_center())
 
-        # GPY region — above the line, right of barrier
+        # GPY region — above the line
         gpy_rect = Rectangle(
-            width=3.8,
-            height=0.6,
+            width=2.8,
+            height=0.5,
             fill_color=GREEN,
             fill_opacity=0.15,
             stroke_color=GREEN,
             stroke_width=2,
         )
-        gpy_rect.move_to(theta_line.n2p(0.75) + UP * 1.8)
-        gpy_label = Tex(r"GPY needs this", font_size=24, color=GREEN)
+        gpy_rect.move_to(theta_line.n2p(0.75) + UP * 1.2)
+        gpy_label = Tex(r"GPY needs this", font_size=22, color=GREEN)
         gpy_label.move_to(gpy_rect.get_center())
 
         # Delta gap indicator
         gap_brace = Brace(
             VGroup(
                 Dot(theta_line.n2p(0.5)),
-                Dot(theta_line.n2p(0.52)),
+                Dot(theta_line.n2p(0.533)),
             ),
             direction=UP,
             color=YELLOW,
@@ -1510,54 +1472,47 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        # Center: definition
+        # Left: definition
         def_label = Tex(
             r"\textbf{Definition:}",
             font_size=28,
         )
-        def_label.shift(UP * 1.5)
 
         smooth_def = MathTex(
             r"q \text{ is } y\text{-smooth if } p \mid q \implies p \leq y",
-            font_size=26,
+            font_size=22,
         )
-        smooth_def.next_to(def_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
         example = Tex(
             r"Example: $12 = 2^2 \cdot 3$ is 3-smooth",
-            font_size=26,
+            font_size=22,
             color=TEAL,
         )
-        example.next_to(smooth_def, DOWN, buff=0.5, aligned_edge=LEFT)
 
         left_content = VGroup(def_label, smooth_def, example)
-        left_content.set_x(-2.0)
+        left_content.arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+        left_content.next_to(header, DOWN, buff=0.5).shift(LEFT * 2.2)
 
-        # Right side: Zhang's choice
+        # Right: Zhang's choice
         zhang_label = Tex(
             r"\textbf{Zhang's choice:}",
             font_size=28,
         )
-        zhang_label.shift(UP * 1.5)
 
         zhang_choice = MathTex(
             r"y = x^\delta, \quad \delta \approx \frac{1}{584}",
-            font_size=30,
+            font_size=24,
         )
-        zhang_choice.next_to(zhang_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
         zhang_note = Tex(
             r"Very small, but enough to break the barrier",
-            font_size=20,
+            font_size=18,
             color=GRAY,
         )
-        zhang_note.next_to(zhang_choice, DOWN, buff=0.3, aligned_edge=LEFT)
 
         right_content = VGroup(zhang_label, zhang_choice, zhang_note)
-        right_content.set_x(2.0)
-
-        right_content = VGroup(zhang_label, zhang_choice, zhang_note)
-        right_content.set_x(2.0)
+        right_content.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+        right_content.next_to(header, DOWN, buff=0.5).shift(RIGHT * 2.2)
 
         with self.voiceover(
             text=get_phonetic_text("Let us look at each step in more detail, "
@@ -1611,24 +1566,30 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             font_size=28,
             color=TEAL,
         )
+
+        crt_demo = MathTex(
+            r"\mathbb{Z}/12\mathbb{Z} \cong \mathbb{Z}/4\mathbb{Z} \times \mathbb{Z}/3\mathbb{Z}",
+            font_size=22,
+            color=TEAL,
+        )
+
         benefit1 = Tex(
             r"$\bullet$ CRT factorization: $\mathbb{Z}/q\mathbb{Z} \cong \prod \mathbb{Z}/p_i^{e_i}\mathbb{Z}$",
-            font_size=24,
+            font_size=20,
         )
         benefit2 = Tex(
             r"$\bullet$ Kloosterman structure becomes visible",
-            font_size=24,
+            font_size=20,
         )
         benefit3 = Tex(
             r"$\bullet$ Error terms become tractable",
-            font_size=24,
+            font_size=20,
         )
 
-        content = VGroup(why_label, benefit1, benefit2, benefit3)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
+        content = VGroup(why_label, crt_demo, benefit1, benefit2, benefit3)
+        content.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
         content.next_to(header, DOWN, buff=0.5)
         content.set_x(0)
-        center_mathtex(content)
 
         with self.voiceover(
             text=get_phonetic_text("Why does this help? "
@@ -1650,15 +1611,6 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         ):
             self.play(Write(header), run_time=1.0)
             self.play(FadeIn(why_label), run_time=0.8)
-
-            crt_demo = MathTex(
-                r"\mathbb{Z}/12\mathbb{Z} \cong \mathbb{Z}/4\mathbb{Z} \times \mathbb{Z}/3\mathbb{Z}",
-                font_size=24,
-                color=TEAL,
-            )
-            crt_demo.next_to(why_label, DOWN, buff=0.4)
-            crt_demo.set_x(0)
-
             self.play(FadeIn(crt_demo), run_time=1.5)
             self.play(FadeIn(benefit1, shift=RIGHT * 0.3), run_time=1.0)
             self.play(FadeIn(benefit2, shift=RIGHT * 0.3), run_time=1.0)
@@ -1682,47 +1634,45 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             font_size=28,
             color=TEAL,
         )
-        type1_label.shift(UP * 2.0)
-
+        
         type1_eq = MathTex(
             r"\sum_{m \sim M} \alpha_m \sum_{n \sim N} \psi(mn)",
-            font_size=26,
+            font_size=24,
         )
-        type1_eq.next_to(type1_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
         type1_cond = MathTex(
             r"M \leq x^{1/2 + \delta}, \quad N = x / M \text{ is long}",
-            font_size=22,
+            font_size=20,
             color=GRAY,
         )
-        type1_cond.next_to(type1_eq, DOWN, buff=0.3, aligned_edge=LEFT)
 
         type1_note = Tex(
             r"$\bullet$ Easier: long range gives cancellation",
-            font_size=22,
+            font_size=20,
             color=GRAY,
         )
-        type1_note.next_to(type1_cond, DOWN, buff=0.3, aligned_edge=LEFT)
 
         left_content = VGroup(type1_label, type1_eq, type1_cond, type1_note)
-        left_content.set_x(-2.5)
+        left_content.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
+        left_content.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=0.8)
 
         # Right side: visual bar diagram
-        short_bar = Rectangle(height=0.35, width=1.2, fill_color=TEAL, fill_opacity=0.7, stroke_width=1)
-        long_bar = Rectangle(height=0.35, width=4.0, fill_color=TEAL, fill_opacity=0.35, stroke_width=1)
-        short_label = Tex(r"short $M$", font_size=20)
-        long_label = Tex(r"long $N = x/M$", font_size=20)
+        short_bar = Rectangle(height=0.3, width=1.0, fill_color=TEAL, fill_opacity=0.7, stroke_width=1)
+        long_bar = Rectangle(height=0.3, width=3.5, fill_color=TEAL, fill_opacity=0.35, stroke_width=1)
+        short_label = Tex(r"short $M$", font_size=18)
+        long_label = Tex(r"long $N = x/M$", font_size=18)
         short_label.move_to(short_bar)
         long_label.move_to(long_bar)
         type1_vis = VGroup(
             VGroup(short_bar, short_label),
             VGroup(long_bar, long_label),
         )
-        type1_vis.arrange(RIGHT, buff=0.4)
-        type1_vis.set_x(2.0).shift(UP * 0.5)
+        type1_vis.arrange(RIGHT, buff=0.3)
 
-        vis_label = Tex(r"Range sizes:", font_size=20, color=GRAY)
-        vis_label.next_to(type1_vis, UP, buff=0.3)
+        vis_label = Tex(r"Range sizes:", font_size=18, color=GRAY)
+        vis_label_above = VGroup(vis_label, type1_vis)
+        vis_label_above.arrange(DOWN, buff=0.15)
+        vis_label_above.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.8)
 
         with self.voiceover(
             text=get_phonetic_text("After restricting to smooth moduli, "
@@ -1779,47 +1729,45 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             font_size=28,
             color=GOLD,
         )
-        type2_label.shift(UP * 2.0)
 
         type2_eq = MathTex(
             r"\sum_{m \sim M} \sum_{n \sim N} \alpha_m \beta_n \, \psi(mn)",
-            font_size=26,
+            font_size=24,
         )
-        type2_eq.next_to(type2_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
         type2_cond = MathTex(
             r"x^\delta \leq M, N \leq x^{1/2 + \delta}",
-            font_size=22,
+            font_size=20,
             color=GRAY,
         )
-        type2_cond.next_to(type2_eq, DOWN, buff=0.3, aligned_edge=LEFT)
 
         type2_note = Tex(
             r"$\bullet$ Harder: needs Cauchy-Schwarz + Kloosterman",
-            font_size=22,
+            font_size=20,
             color=GRAY,
         )
-        type2_note.next_to(type2_cond, DOWN, buff=0.3, aligned_edge=LEFT)
 
         left_content = VGroup(type2_label, type2_eq, type2_cond, type2_note)
-        left_content.set_x(-2.5)
+        left_content.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
+        left_content.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=0.8)
 
         # Right side: visual bar diagram
-        mod_bar1 = Rectangle(height=0.35, width=2.5, fill_color=GOLD, fill_opacity=0.6, stroke_width=1)
-        mod_bar2 = Rectangle(height=0.35, width=2.5, fill_color=GOLD, fill_opacity=0.6, stroke_width=1)
-        mod_label1 = Tex(r"moderate $M$", font_size=20)
-        mod_label2 = Tex(r"moderate $N$", font_size=20)
+        mod_bar1 = Rectangle(height=0.3, width=2.2, fill_color=GOLD, fill_opacity=0.6, stroke_width=1)
+        mod_bar2 = Rectangle(height=0.3, width=2.2, fill_color=GOLD, fill_opacity=0.6, stroke_width=1)
+        mod_label1 = Tex(r"moderate $M$", font_size=18)
+        mod_label2 = Tex(r"moderate $N$", font_size=18)
         mod_label1.move_to(mod_bar1)
         mod_label2.move_to(mod_bar2)
         type2_vis = VGroup(
             VGroup(mod_bar1, mod_label1),
             VGroup(mod_bar2, mod_label2),
         )
-        type2_vis.arrange(RIGHT, buff=0.4)
-        type2_vis.set_x(2.0).shift(UP * 0.5)
+        type2_vis.arrange(RIGHT, buff=0.3)
 
-        vis_label = Tex(r"Both moderate:", font_size=20, color=GRAY)
-        vis_label.next_to(type2_vis, UP, buff=0.3)
+        vis_label = Tex(r"Both moderate:", font_size=18, color=GRAY)
+        vis_label_above = VGroup(vis_label, type2_vis)
+        vis_label_above.arrange(DOWN, buff=0.15)
+        vis_label_above.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.8)
 
         with self.voiceover(
             text=get_phonetic_text("Type two sums are bilinear. "
@@ -1856,25 +1804,54 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        # Center the equation
         kl_def = MathTex(
             r"K(a, b; p) = \sum_{x \in \mathbb{F}_p^\times} "
             r"e\!\left(\frac{ax + b\overline{x}}{p}\right)",
-            font_size=32,
+            font_size=28,
         )
-        kl_def.next_to(header, DOWN, buff=0.6)
+        kl_def.next_to(header, DOWN, buff=0.5)
 
-        # Labels for terms
-        linear_label = Tex(r"linear term", font_size=22, color=TEAL)
-        inverse_label = Tex(r"mult. inverse", font_size=22, color=GOLD)
+        linear_label = Tex(r"linear term", font_size=16, color=TEAL)
+        inverse_label = Tex(r"mult. inverse", font_size=16, color=GOLD)
 
-        # Bottom: trivial bound
+        linear_label.next_to(kl_def, UP, buff=0.2)
+        inverse_label.next_to(kl_def, DOWN, buff=0.2)
+        linear_label.set_x(kl_def.get_x())
+        inverse_label.set_x(kl_def.get_x())
+
+        # Trivial bound - simplified
         trivial = MathTex(
-            r"\text{Trivial bound: } |K| \leq p - 1",
-            font_size=26,
+            r"\text{Trivial: } |K| \leq p - 1",
+            font_size=20,
             color=GRAY,
         )
-        trivial.to_edge(DOWN, buff=0.8)
+        trivial.next_to(kl_def, DOWN, buff=0.4)
+
+        # Right: unit circle visualization
+        circle = Circle(radius=0.7, color=WHITE, stroke_width=1)
+        circle_label = Tex(r"Unit circle", font_size=14, color=GRAY)
+        circle_label.next_to(circle, DOWN, buff=0.1)
+
+        angles = [0.3, 1.2, 2.5, 3.8, 4.7, 5.5]
+        vec_colors = [RED, BLUE, GREEN, YELLOW, PURPLE, TEAL]
+        vectors = VGroup()
+        for angle, color in zip(angles, vec_colors):
+            arrow = Arrow(
+                ORIGIN,
+                0.7 * np.array([np.cos(angle), np.sin(angle), 0]),
+                color=color,
+                stroke_width=2,
+                buff=0,
+                max_tip_length_to_length_ratio=0.15,
+            )
+            vectors.add(arrow)
+
+        cancel_note = Tex(r"cancellation", font_size=14, color=TEAL)
+        cancel_note.next_to(circle_label, DOWN, buff=0.1)
+
+        vis_group = VGroup(circle, circle_label, vectors, cancel_note)
+        vis_group.arrange(DOWN, buff=0.1)
+        vis_group.next_to(header, DOWN, buff=0.5).shift(RIGHT * 3.5)
 
         with self.voiceover(
             text=get_phonetic_text("Now we reach the deepest ingredient of Zhang's proof. "
@@ -1895,16 +1872,13 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "Inside the exponential, we have a linear term a x "
                  "plus b times the multiplicative inverse of x, "
                  "all divided by p."),
-            subcaption="A Kloosterman sum is a sum over the multiplicative group "
+             subcaption="A Kloosterman sum is a sum over the multiplicative group "
                  "of a finite field. "
                  "Inside the exponential, we have a linear term a x "
                  "plus b times the multiplicative inverse of x, "
                  "all divided by p."
         ):
-            # Highlight linear term
-            linear_box = SurroundingRectangle(kl_def[0][4:6], color=TEAL, buff=0.05, stroke_width=2)
-            linear_label.next_to(linear_box, UP, buff=0.15)
-            self.play(Create(linear_box), FadeIn(linear_label), run_time=1.5)
+            pass
 
         self.wait(0.3)
 
@@ -1916,11 +1890,6 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "As x varies, these complex numbers point in different directions "
                  "and cancel each other out."
         ):
-            # Highlight inverse term
-            inverse_box = SurroundingRectangle(kl_def[0][7:12], color=GOLD, buff=0.05, stroke_width=2)
-            inverse_label.next_to(inverse_box, DOWN, buff=0.15)
-            self.play(Create(inverse_box), FadeIn(inverse_label), run_time=1.5)
-
             # Show cancellation visualization: unit circle with vectors
             circle = Circle(radius=1.0, color=WHITE, stroke_width=1)
             circle_label = Tex(r"Unit circle in $\mathbb{C}$", font_size=16, color=GRAY)
@@ -1945,7 +1914,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             cancel_note.next_to(circle_label, DOWN, buff=0.2)
 
             vis_group = VGroup(circle, circle_label, vectors, cancel_note)
-            vis_group.to_edge(RIGHT, buff=0.8).shift(UP * 0.5)
+            vis_group.next_to(header, DOWN, buff=0.5).to_edge(RIGHT, buff=0.8)
 
             self.play(FadeIn(vis_group), run_time=2.0)
 
@@ -1976,119 +1945,97 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        # Left side: the pipeline
         pipeline_label = Tex(
             r"\textbf{The pipeline:}",
-            font_size=28,
+            font_size=24,
         )
-        pipeline_label.to_edge(LEFT, buff=0.8).shift(UP * 2.5)
 
-        # Step A: Type II sum
         type2_reminder = MathTex(
             r"\sum_{m \sim M} \sum_{n \sim N} \alpha_m \beta_n \, \psi(mn)",
-            font_size=24,
+            font_size=18,
             color=GOLD,
         )
-        type2_reminder.next_to(pipeline_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
-        arrow1 = Tex(r"$\downarrow$", font_size=28, color=GRAY)
-        arrow1.next_to(type2_reminder, DOWN, buff=0.1)
-
-        # Step B: Apply Cauchy-Schwarz
         cs_label = Tex(
             r"\textbf{Apply Cauchy-Schwarz}",
-            font_size=22,
+            font_size=18,
             color=TEAL,
         )
-        cs_label.next_to(arrow1, DOWN, buff=0.1)
 
         cs_note = Tex(
             r"Square the sum $\rightarrow$ double sum over $n_1, n_2$",
-            font_size=18,
+            font_size=14,
             color=GRAY,
         )
-        cs_note.next_to(cs_label, DOWN, buff=0.15, aligned_edge=LEFT)
 
-        arrow2 = Tex(r"$\downarrow$", font_size=28, color=GRAY)
-        arrow2.next_to(cs_note, DOWN, buff=0.1)
-
-        # Step C: Reduced to Kloosterman
         kl_reduced = MathTex(
             r"\sum_{n_1, n_2} \cdots \sum_{c} K(c, \overline{n_1}n_2; q)",
-            font_size=22,
+            font_size=16,
             color=ORANGE,
         )
-        kl_reduced.next_to(arrow2, DOWN, buff=0.1)
 
         kl_note = Tex(
-            r"Kloosterman sums appear from the congruence structure",
-            font_size=18,
+            r"Kloosterman sums appear from congruence",
+            font_size=14,
             color=GRAY,
         )
-        kl_note.next_to(kl_reduced, DOWN, buff=0.15, aligned_edge=LEFT)
 
-        arrow3 = Tex(r"$\downarrow$", font_size=28, color=GRAY)
-        arrow3.next_to(kl_note, DOWN, buff=0.1)
-
-        # Step D: Deligne's bound
         deligne_result = MathTex(
             r"|K(a, b; q)| \leq \tau(q) \cdot 2\sqrt{q}",
-            font_size=24,
+            font_size=18,
             color=GREEN,
         )
-        deligne_result.next_to(arrow3, DOWN, buff=0.1)
 
         deligne_note = Tex(
             r"Square-root cancellation! Error $\ll q^{1/2+\epsilon}$",
-            font_size=18,
+            font_size=14,
             color=GREEN,
         )
-        deligne_note.next_to(deligne_result, DOWN, buff=0.15, aligned_edge=LEFT)
 
         pipeline = VGroup(
-            pipeline_label, type2_reminder, arrow1,
-            cs_label, cs_note, arrow2,
-            kl_reduced, kl_note, arrow3,
+            pipeline_label, type2_reminder,
+            cs_label, cs_note,
+            kl_reduced, kl_note,
             deligne_result, deligne_note,
         )
-        pipeline.arrange(DOWN, aligned_edge=LEFT, buff=0.08)
-        pipeline.to_edge(LEFT, buff=0.6).shift(UP * 0.3)
+        pipeline.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+        pipeline.next_to(header, DOWN, buff=0.5).to_edge(LEFT, buff=1.2)
 
-        # Right side: visual explanation of Cauchy-Schwarz
+        # Right side: visual explanation
         cs_explain_label = Tex(
             r"\textbf{Why Cauchy-Schwarz works:}",
             font_size=24,
             color=TEAL,
         )
-        cs_explain_label.to_edge(RIGHT, buff=0.8).shift(UP * 2.8)
+        cs_explain_label.set_x(2.5).shift(UP * 2.5)
 
         cs_idea1 = Tex(
             r"$\bullet$ Squaring creates correlations between shifts",
-            font_size=20,
+            font_size=18,
             color=GRAY,
         )
         cs_idea1.next_to(cs_explain_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
         cs_idea2 = Tex(
             r"$\bullet$ Congruence $m n_1 \equiv m n_2 \pmod q$ forces structure",
-            font_size=20,
+            font_size=18,
             color=GRAY,
         )
-        cs_idea2.next_to(cs_idea1, DOWN, buff=0.25, aligned_edge=LEFT)
+        cs_idea2.next_to(cs_idea1, DOWN, buff=0.2, aligned_edge=LEFT)
 
         cs_idea3 = Tex(
             r"$\bullet$ The resulting exponential sums are Kloosterman",
-            font_size=20,
+            font_size=18,
             color=GRAY,
         )
-        cs_idea3.next_to(cs_idea2, DOWN, buff=0.25, aligned_edge=LEFT)
+        cs_idea3.next_to(cs_idea2, DOWN, buff=0.2, aligned_edge=LEFT)
 
         cs_idea4 = Tex(
             r"$\bullet$ Deligne bounds each one by $\sqrt{q}$",
-            font_size=20,
+            font_size=18,
             color=GREEN,
         )
-        cs_idea4.next_to(cs_idea3, DOWN, buff=0.25, aligned_edge=LEFT)
+        cs_idea4.next_to(cs_idea3, DOWN, buff=0.2, aligned_edge=LEFT)
 
         with self.voiceover(
             text=get_phonetic_text("Now let us see how Cauchy-Schwarz and Deligne work together. "
@@ -2115,7 +2062,6 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "This eliminates the coefficients alpha sub m "
                  "and forces a congruence relation between n one and n two."
         ):
-            self.play(FadeIn(arrow1), run_time=0.5)
             self.play(FadeIn(cs_label), run_time=1.0)
             self.play(FadeIn(cs_note), run_time=1.0)
             self.play(FadeIn(cs_explain_label), run_time=1.0)
@@ -2133,7 +2079,6 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "These are exponential sums involving a linear term "
                  "and a multiplicative inverse modulo q."
         ):
-            self.play(FadeIn(arrow2), run_time=0.5)
             self.play(FadeIn(kl_reduced), run_time=2.0)
             self.play(FadeIn(kl_note), run_time=1.0)
             self.play(FadeIn(cs_idea2), run_time=1.0)
@@ -2157,7 +2102,6 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "Without it, the error terms would be too large, "
                  "and Zhang's proof would collapse."
         ):
-            self.play(FadeIn(arrow3), run_time=0.5)
             self.play(FadeIn(deligne_result), run_time=2.0)
             self.play(FadeIn(deligne_note), run_time=1.0)
             self.play(FadeIn(cs_idea4), run_time=1.0)
@@ -2175,24 +2119,25 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        step_labels = VGroup(
-            Tex(r"\textbf{(1) Start with the GPY weighted sum}", font_size=26),
-            MathTex(r"S = \sum_{n \leq x} \left(\sum_{i=1}^k \Lambda(n+h_i) - \rho\right) w(n)^2", font_size=24),
-            Tex(r"$\bullet$ Goal: show $S > 0$ for some admissible $\mathcal{H}$", font_size=24),
-        )
-        step_labels.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        step_labels.next_to(header, DOWN, buff=0.5)
-        step_labels.set_x(0)
+        step1_title = Tex(r"\textbf{(1) Start with the GPY weighted sum}", font_size=24)
+        step1_eq = MathTex(r"S = \sum_{n \leq x} \left(\sum_{i=1}^k \Lambda(n+h_i) - \rho\right) w(n)^2", font_size=20)
+        step1_goal = Tex(r"Goal: show $S > 0$ for some admissible $\mathcal{H}$", font_size=20)
 
-        step_analysis = VGroup(
-            Tex(r"\textbf{(2) Decompose the error}", font_size=26),
-            Tex(r"$\bullet$ Restrict to smooth moduli $q$", font_size=24),
-            Tex(r"$\bullet$ Split into Type I sums (one long variable)", font_size=24),
-            Tex(r"$\bullet$ Split into Type II sums (bilinear form)", font_size=24),
-        )
-        step_analysis.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        step_analysis.next_to(step_labels, DOWN, buff=0.4)
-        step_analysis.set_x(0)
+        step_labels = VGroup(step1_title, step1_eq, step1_goal)
+        step_labels.arrange(DOWN, aligned_edge=LEFT, buff=0.15)
+
+        step2_title = Tex(r"\textbf{(2) Decompose the error}", font_size=24)
+        step2_b1 = Tex(r"Restrict to smooth moduli $q$", font_size=20)
+        step2_b2 = Tex(r"Split into Type I sums (one long variable)", font_size=20)
+        step2_b3 = Tex(r"Split into Type II sums (bilinear form)", font_size=20)
+
+        step_analysis = VGroup(step2_title, step2_b1, step2_b2, step2_b3)
+        step_analysis.arrange(DOWN, aligned_edge=LEFT, buff=0.15)
+
+        main_content = VGroup(step_labels, step_analysis)
+        main_content.arrange(DOWN, buff=0.5)
+        main_content.next_to(header, DOWN, buff=0.5).set_x(0)
+        center_mathtex(main_content)
 
         with self.voiceover(
             text=get_phonetic_text("Now let us see how all the pieces fit together. "
@@ -2210,14 +2155,6 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         ):
             self.play(Write(header), run_time=1.0)
             self.play(FadeIn(step_labels), run_time=2.5)
-
-            arrow1 = Arrow(
-                start=step_labels.get_bottom(),
-                end=step_analysis.get_top(),
-                color=TEAL,
-                buff=0.1,
-            )
-            self.play(GrowArrow(arrow1), run_time=0.5)
 
         self.wait(0.5)
 
@@ -2258,15 +2195,14 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        step_estimate = VGroup(
-            Tex(r"\textbf{(3) Estimate each type}", font_size=26),
-            Tex(r"$\bullet$ Type I: use smooth modulus factorization", font_size=24),
-            Tex(r"$\bullet$ Type II: Cauchy-Schwarz $\rightarrow$ Kloosterman sums", font_size=24),
-            Tex(r"$\bullet$ Apply Deligne: $|K| \leq 2\sqrt{p}$", font_size=24, color=GREEN),
-        )
+        step3_title = Tex(r"\textbf{(3) Estimate each type}", font_size=24)
+        step3_b1 = Tex(r"Type I: use smooth modulus factorization", font_size=20)
+        step3_b2 = Tex(r"Type II: Cauchy-Schwarz to Kloosterman sums", font_size=20)
+        step3_b3 = Tex(r"Apply Deligne: $|K| \leq 2\sqrt{p}$", font_size=20, color=GREEN)
+
+        step_estimate = VGroup(step3_title, step3_b1, step3_b2, step3_b3)
         step_estimate.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        step_estimate.next_to(header, DOWN, buff=0.5)
-        step_estimate.set_x(0)
+        step_estimate.next_to(header, DOWN, buff=0.5).set_x(0)
 
         with self.voiceover(
             text=get_phonetic_text("Step three: estimate each type. "
@@ -2310,15 +2246,15 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        step_conclude = VGroup(
-            Tex(r"\textbf{(4) Conclusion}", font_size=26),
-            MathTex(r"\theta = 1/2 + \delta \quad (\delta \approx 1/584)", font_size=28, color=GREEN),
-            Tex(r"$\Rightarrow S > 0$ for large enough $k$", font_size=26, color=GREEN),
-            Tex(r"$\Rightarrow \exists$ infinitely many $n$ with 2+ primes in $\{n+h_i\}$", font_size=24, color=GREEN),
-        )
-        step_conclude.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
-        step_conclude.next_to(header, DOWN, buff=0.5)
-        step_conclude.set_x(0)
+        step4_title = Tex(r"\textbf{(4) Conclusion}", font_size=24)
+        step4_theta = MathTex(r"\theta = 1/2 + \delta \quad (\delta \approx 1/584)", font_size=22, color=GREEN)
+        step4_pos = Tex(r"$S > 0$ for large enough $k$", font_size=22, color=GREEN)
+        step4_inf = Tex(r"Infinitely many $n$ with 2+ primes in $\{n+h_i\}$", font_size=20, color=GREEN)
+
+        step_conclude = VGroup(step4_title, step4_theta, step4_pos, step4_inf)
+        step_conclude.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+        step_conclude.next_to(header, DOWN, buff=0.5).set_x(0)
+        center_mathtex(step_conclude)
 
         with self.voiceover(
             text=get_phonetic_text("Step four: putting the estimates together, "
@@ -2487,67 +2423,26 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        # Left: timeline of bounds
-        timeline_label = Tex(
-            r"\textbf{Improving the bound:}",
-            font_size=28,
-        )
-        timeline_label.to_edge(LEFT, buff=0.8).shift(UP * 2.5)
+        left_title = Tex(r"\textbf{Improving the bound:}", font_size=26)
+        left_zhang = Tex(r"Zhang (2014): $H \leq 70,\!000,\!000$", font_size=20)
+        left_poly = Tex(r"Polymath8: $H \leq 4,\!680$", font_size=20, color=TEAL)
+        left_maynard = Tex(r"Maynard (2013): $H \leq 600$", font_size=20, color=GREEN)
+        left_combined = Tex(r"Maynard + Zhang: $H \leq 246$", font_size=20, color=GREEN)
 
-        zhang_line = Tex(
-            r"\textbf{Zhang (2014):} $H \leq 70,\!000,\!000$",
-            font_size=24,
-        )
-        zhang_line.next_to(timeline_label, DOWN, buff=0.3, aligned_edge=LEFT)
+        left_items = VGroup(left_title, left_zhang, left_poly, left_maynard, left_combined)
+        left_items.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
 
-        polymath_line = Tex(
-            r"\textbf{Polymath8:} $H \leq 4,\!680$",
-            font_size=24,
-            color=TEAL,
-        )
-        polymath_line.next_to(zhang_line, DOWN, buff=0.25, aligned_edge=LEFT)
+        right_title = Tex(r"\textbf{Where we stand:}", font_size=26)
+        right_geh = Tex(r"Under GEH: $H \leq 6$", font_size=20, color=TEAL)
+        right_open = MathTex(r"\liminf (p_{n+1} - p_n) = 2", font_size=20, color=YELLOW)
+        right_twin = Tex(r"Twin Prime Conjecture remains open", font_size=18, color=GRAY)
 
-        maynard_line = Tex(
-            r"\textbf{Maynard (2013):} $H \leq 600$",
-            font_size=24,
-            color=GREEN,
-        )
-        maynard_line.next_to(polymath_line, DOWN, buff=0.25, aligned_edge=LEFT)
+        right_items = VGroup(right_title, right_geh, right_open, right_twin)
+        right_items.arrange(DOWN, buff=0.25, aligned_edge=LEFT)
 
-        maynard_refined = Tex(
-            r"\textbf{Maynard + Zhang:} $H \leq 246$",
-            font_size=24,
-            color=GREEN,
-        )
-        maynard_refined.next_to(maynard_line, DOWN, buff=0.25, aligned_edge=LEFT)
-
-        # Right: open problems
-        open_label = Tex(
-            r"\textbf{Where we stand:}",
-            font_size=28,
-        )
-        open_label.to_edge(RIGHT, buff=0.8).shift(UP * 2.5)
-
-        geh_line = Tex(
-            r"Under \textbf{Generalized Elliott--Halberstam}: $H \leq 6$",
-            font_size=22,
-            color=TEAL,
-        )
-        geh_line.next_to(open_label, DOWN, buff=0.3, aligned_edge=LEFT)
-
-        twin_line = MathTex(
-            r"\text{Open: } \liminf_{n \to \infty} (p_{n+1} - p_n) = 2",
-            font_size=26,
-            color=YELLOW,
-        )
-        twin_line.next_to(geh_line, DOWN, buff=0.5, aligned_edge=LEFT)
-
-        twin_note = Tex(
-            r"The Twin Prime Conjecture remains wide open",
-            font_size=20,
-            color=GRAY,
-        )
-        twin_note.next_to(twin_line, DOWN, buff=0.2, aligned_edge=LEFT)
+        main_content = VGroup(left_items, right_items)
+        main_content.arrange(RIGHT, buff=2.0)
+        main_content.next_to(header, DOWN, buff=0.5).set_x(0)
 
         with self.voiceover(
             text=get_phonetic_text("Zhang's result sparked an explosion of activity. "
@@ -2561,9 +2456,9 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         ):
             self.play(Write(header), run_time=1.5)
             self.wait(0.3)
-            self.play(FadeIn(timeline_label), run_time=0.8)
-            self.play(FadeIn(zhang_line), run_time=1.5)
-            self.play(FadeIn(polymath_line), run_time=1.0)
+            self.play(FadeIn(left_items[0]), run_time=0.8)
+            self.play(FadeIn(left_items[1]), run_time=1.5)
+            self.play(FadeIn(left_items[2]), run_time=1.0)
 
         self.wait(0.3)
 
@@ -2579,8 +2474,8 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "and later to two hundred forty-six "
                  "when combined with Zhang's smooth moduli idea."
         ):
-            self.play(FadeIn(maynard_line), run_time=1.0)
-            self.play(FadeIn(maynard_refined), run_time=1.0)
+            self.play(FadeIn(left_items[3]), run_time=1.0)
+            self.play(FadeIn(left_items[4]), run_time=1.0)
 
         self.wait(0.5)
 
@@ -2596,10 +2491,10 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
                  "which claims the gap is exactly two, "
                  "remains wide open."
         ):
-            self.play(FadeIn(open_label), run_time=1.0)
-            self.play(FadeIn(geh_line), run_time=1.5)
-            self.play(FadeIn(twin_line), run_time=2.0)
-            self.play(FadeIn(twin_note), run_time=1.0)
+            self.play(FadeIn(right_items[0]), run_time=1.0)
+            self.play(FadeIn(right_items[1]), run_time=1.5)
+            self.play(FadeIn(right_items[2]), run_time=2.0)
+            self.play(FadeIn(right_items[3]), run_time=1.0)
 
         self.wait(1.5)
         clear_screen(self)

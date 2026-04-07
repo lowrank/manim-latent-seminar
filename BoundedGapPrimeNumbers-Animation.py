@@ -12,7 +12,7 @@ from latent_utils import (
 )
 
 
-class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
+class BoundedGapsProof(LatentPrelude, VoiceoverScene):
     """
     Visualizes Yitang Zhang's 2014 proof on bounded gaps between primes.
     Uses Kokoro TTS for synchronized narration.
@@ -77,7 +77,6 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
 
         # === Conclusion ===
         self.conclusion_part1()
-        self.conclusion_part2()
 
     # ------------------------------------------------------------------
     # Scene 1: Intro
@@ -150,11 +149,9 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
 
         with self.voiceover(
             text=get_phonetic_text("This means the average gap between consecutive primes "
-                 "grows like the logarithm of n. "
-                 "So on average, primes get farther apart as we go further out."),
+                 "near p is about log p."),
             subcaption="This means the average gap between consecutive primes "
-                 "grows like the logarithm of n. "
-                 "So on average, primes get farther apart as we go further out."
+                 "near p is about log p."
         ):
             self.play(FadeIn(avg_gap), run_time=1.5)
 
@@ -162,7 +159,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
         clear_screen(self)
 
     # ------------------------------------------------------------------
-    # Scene 2b: Prime Gaps Context — Number line visualization
+    # Scene 2b: Prime Gaps Context — What is known
     # ------------------------------------------------------------------
     def prime_gaps_context_part2(self):
         header = Tex(
@@ -171,51 +168,30 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        number_line = NumberLine(
-            x_range=[0, 32, 1],
-            length=10,
-            include_numbers=False,
-            include_ticks=True,
-        ).shift(DOWN * 0.5)
+        small_gaps = MathTex(
+            r"\liminf_{n \to \infty} \frac{p_{n+1} - p_n}{\log p_n} = 0",
+            font_size=28,
+        )
+        small_gaps.next_to(header, DOWN, buff=0.5).set_x(0)
 
-        primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
-        dots = VGroup()
-        prime_labels = VGroup()
-        gap_labels = VGroup()
-
-        for p in primes:
-            pos = number_line.n2p(p)
-            dot = Dot(pos, radius=0.09, color=YELLOW)
-            dots.add(dot)
-
-            lbl = MathTex(str(p), font_size=22)
-            lbl.next_to(pos, UP, buff=0.15)
-            prime_labels.add(lbl)
-
-        for i in range(len(primes) - 1):
-            gap = primes[i + 1] - primes[i]
-            mid = (number_line.n2p(primes[i]) + number_line.n2p(primes[i + 1])) / 2
-            gap_lbl = MathTex(str(gap), font_size=18, color=TEAL)
-            gap_lbl.next_to(mid, UP, buff=0.45)
-            gap_labels.add(gap_lbl)
+        note = Tex(
+            r"Gaps can be arbitrarily small relative to average",
+            font_size=24,
+            color=GRAY,
+        )
+        note.next_to(small_gaps, DOWN, buff=0.4).set_x(0)
 
         with self.voiceover(
-            text=get_phonetic_text("But the average does not tell the whole story. "
-                 "Some gaps are small, and some are very large."),
-            subcaption="But the average does not tell the whole story. "
-                 "Some gaps are small, and some are very large."
+            text=get_phonetic_text("But what about the smallest gaps? "
+                 "It was known that the lim inf of the gap divided by log p "
+                 "is zero. So gaps can be arbitrarily small relative to the average."),
+            subcaption="But what about the smallest gaps? "
+                 "It was known that the lim inf of the gap divided by log p "
+                 "is zero. So gaps can be arbitrarily small relative to the average."
         ):
             self.play(Write(header), run_time=1.5)
-            self.play(Create(number_line), run_time=1.5)
-            self.play(FadeIn(dots), Write(prime_labels), run_time=2.0)
-
-        self.wait(0.5)
-
-        with self.voiceover(
-            text=get_phonetic_text("The question is whether the small gaps keep appearing forever."),
-            subcaption="The question is whether the small gaps keep appearing forever."
-        ):
-            self.play(FadeIn(gap_labels), run_time=2.0)
+            self.play(Write(small_gaps), run_time=2.0)
+            self.play(FadeIn(note), run_time=1.0)
 
         self.wait(1.0)
         clear_screen(self)
@@ -225,76 +201,36 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     # ------------------------------------------------------------------
     def twin_prime_conjecture(self):
         header = Tex(
-            r"\textbf{The Twin Prime Conjecture}",
+            r"\textbf{Twin Prime Conjecture}",
             font_size=32,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        conj = MathTex(
+        conjecture = MathTex(
             r"\liminf_{n \to \infty} (p_{n+1} - p_n) = 2",
             font_size=36,
-        )
-        card, rect, content = make_theorem_card(conj, color=YELLOW, buff=0.3)
-        card.next_to(header, DOWN, buff=0.5)
-        card.set_x(0)
-
-        examples = Tex(
-            r"Examples: $(3,5),\, (5,7),\, (11,13),\, (17,19),\, \dots$",
-            font_size=26,
-            color=TEAL,
-        )
-        examples.next_to(card, DOWN, buff=0.4)
-
-        zhang_note = Tex(
-            r"Zhang proved: $\liminf (p_{n+1} - p_n) < \infty$",
-            font_size=28,
             color=GREEN,
         )
-        zhang_note.next_to(examples, DOWN, buff=0.4)
+        conjecture.next_to(header, DOWN, buff=0.6).set_x(0)
+
+        note = Tex(
+            r"Infinitely many pairs of primes at distance 2",
+            font_size=26,
+            color=GRAY,
+        )
+        note.next_to(conjecture, DOWN, buff=0.4).set_x(0)
 
         with self.voiceover(
-            text=get_phonetic_text("The most famous question about small gaps "
-                 "is the Twin Prime Conjecture."),
-            subcaption="The most famous question about small gaps "
-                 "is the Twin Prime Conjecture."
-        ):
-            self.play(Write(header), run_time=1.5)
-
-        self.wait(0.5)
-
-        with self.voiceover(
-            text=get_phonetic_text("It says that there are infinitely many pairs of primes "
+            text=get_phonetic_text("The famous Twin Prime Conjecture goes further. "
+                 "It claims that there are infinitely many pairs of primes "
                  "that differ by exactly two."),
-            subcaption="It says that there are infinitely many pairs of primes "
+            subcaption="The famous Twin Prime Conjecture goes further. "
+                 "It claims that there are infinitely many pairs of primes "
                  "that differ by exactly two."
         ):
-            self.play(FadeIn(content), Create(rect), run_time=2.0)
-
-        self.wait(1.0)
-
-        with self.voiceover(
-            text=get_phonetic_text("For example, three and five, five and seven, "
-                 "eleven and thirteen. "
-                 "These pairs appear to persist no matter how far you go, "
-                 "but nobody has been able to prove this for over a century."),
-            subcaption="For example, three and five, five and seven, "
-                 "eleven and thirteen. "
-                 "These pairs appear to persist no matter how far you go, "
-                 "but nobody has been able to prove this for over a century."
-        ):
-            self.play(FadeIn(examples), run_time=2.0)
-
-        self.wait(1.0)
-
-        with self.voiceover(
-            text=get_phonetic_text("Zhang's breakthrough was to prove a weaker version: "
-                 "that the gaps are bounded by some finite number, "
-                 "even if we do not know which one."),
-            subcaption="Zhang's breakthrough was to prove a weaker version: "
-                 "that the gaps are bounded by some finite number, "
-                 "even if we do not know which one."
-        ):
-            self.play(FadeIn(zhang_note), run_time=2.0)
+            self.play(Write(header), run_time=1.5)
+            self.play(Write(conjecture), run_time=2.0)
+            self.play(FadeIn(note), run_time=1.0)
 
         self.wait(1.0)
         clear_screen(self)
@@ -305,49 +241,47 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def sieve_intuition_part1(self):
         header = Tex(
             r"\textbf{Sieve Theory Intuition}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
         erat_label = Tex(
             r"\textbf{Sieve of Eratosthenes:}",
-            font_size=28,
+            font_size=30,
         )
         step1 = Tex(
             r"$\bullet$ Cross out multiples of 2",
-            font_size=26,
+            font_size=28,
         )
         step2 = Tex(
             r"$\bullet$ Cross out multiples of 3",
-            font_size=26,
+            font_size=28,
         )
         step3 = Tex(
             r"$\bullet$ Cross out multiples of 5, \dots",
-            font_size=26,
+            font_size=28,
         )
 
         erat_content = VGroup(erat_label, step1, step2, step3)
-        erat_content.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
-        erat_content.next_to(header, DOWN, buff=0.5)
-        erat_content.set_x(0)
-        center_mathtex(erat_content)
+        erat_content.arrange(DOWN, aligned_edge=LEFT, buff=0.35)
+        erat_content.to_edge(LEFT, buff=0.8).shift(UP * 0.5)
 
         # Sieve visualization: numbers 1-30 in a grid
         numbers_grid = VGroup()
         for i in range(1, 31):
-            sq = Square(side_length=0.35, fill_opacity=0.9, fill_color=WHITE, stroke_width=1, stroke_color=GRAY)
-            num = MathTex(str(i), font_size=16)
+            sq = Square(side_length=0.4, fill_opacity=0.9, fill_color=WHITE, stroke_width=1, stroke_color=GRAY)
+            num = MathTex(str(i), font_size=18)
             num.move_to(sq.get_center())
             cell = VGroup(sq, num)
             numbers_grid.add(cell)
 
-        numbers_grid.arrange_in_grid(rows=3, cols=10, buff=0.08)
-        numbers_grid.scale(0.8)
-        numbers_grid.to_corner(DL, buff=0.5)
+        numbers_grid.arrange_in_grid(rows=3, cols=10, buff=0.1)
+        numbers_grid.to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
 
         composites_2 = {4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30}
         composites_3 = {9, 15, 21, 27}
         composites_5 = {25}
+        primes_remaining = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29}
 
         with self.voiceover(
             text=get_phonetic_text("Before we get to Zhang's proof, "
@@ -379,7 +313,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                     cell = numbers_grid[idx]
                     sq = cell[0]
                     self.play(
-                        sq.animate.set_fill(RED, opacity=0.4),
+                        sq.animate.set_fill(DARK_GRAY, opacity=0.7),
                         run_time=0.08,
                     )
 
@@ -392,7 +326,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                     cell = numbers_grid[idx]
                     sq = cell[0]
                     self.play(
-                        sq.animate.set_fill(RED, opacity=0.4),
+                        sq.animate.set_fill(DARK_GRAY, opacity=0.7),
                         run_time=0.08,
                     )
 
@@ -405,7 +339,19 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                     cell = numbers_grid[idx]
                     sq = cell[0]
                     self.play(
-                        sq.animate.set_fill(RED, opacity=0.4),
+                        sq.animate.set_fill(DARK_GRAY, opacity=0.7),
+                        run_time=0.08,
+                    )
+
+            for idx in range(30):
+                n = idx + 1
+                if n in primes_remaining:
+                    cell = numbers_grid[idx]
+                    sq = cell[0]
+                    num = cell[1]
+                    self.play(
+                        sq.animate.set_fill(YELLOW, opacity=1.0),
+                        num.animate.set_color(BLACK),
                         run_time=0.08,
                     )
 
@@ -418,39 +364,41 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def sieve_intuition_part2(self):
         header = Tex(
             r"\textbf{Sieve Theory Intuition}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
         modern = Tex(
             r"\textbf{Modern sieves:} use weights $w(n)$",
-            font_size=28,
+            font_size=30,
             color=TEAL,
         )
         weight_note = Tex(
-            r"$\phantom{\bullet}$\; Large on primes, small on composites",
-            font_size=24,
+            r"$\bullet$ Large on primes, small on composites",
+            font_size=26,
+            color=GRAY,
+        )
+        goal_note = Tex(
+            r"$\bullet$ Count integers where multiple shifts are prime",
+            font_size=26,
             color=GRAY,
         )
 
-        modern_content = VGroup(modern, weight_note)
-        modern_content.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        modern_content.next_to(header, DOWN, buff=0.5)
-        modern_content.set_x(0)
-        center_mathtex(modern_content)
+        modern_content = VGroup(modern, weight_note, goal_note)
+        modern_content.arrange(DOWN, aligned_edge=LEFT, buff=0.35)
+        modern_content.to_edge(LEFT, buff=0.8).shift(UP * 0.5)
 
         # Sieve visualization: numbers 1-30 in a grid
         numbers_grid = VGroup()
         for i in range(1, 31):
-            sq = Square(side_length=0.35, fill_opacity=0.9, fill_color=WHITE, stroke_width=1, stroke_color=GRAY)
-            num = MathTex(str(i), font_size=16)
+            sq = Square(side_length=0.4, fill_opacity=0.9, fill_color=WHITE, stroke_width=1, stroke_color=GRAY)
+            num = MathTex(str(i), font_size=18)
             num.move_to(sq.get_center())
             cell = VGroup(sq, num)
             numbers_grid.add(cell)
 
-        numbers_grid.arrange_in_grid(rows=3, cols=10, buff=0.08)
-        numbers_grid.scale(0.8)
-        numbers_grid.to_corner(DL, buff=0.5)
+        numbers_grid.arrange_in_grid(rows=3, cols=10, buff=0.1)
+        numbers_grid.to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
 
         with self.voiceover(
             text=get_phonetic_text("Modern sieve methods are more sophisticated. "
@@ -470,11 +418,18 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
             primes_set = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29}
             for idx in range(30):
                 n = idx + 1
+                cell = numbers_grid[idx]
+                sq = cell[0]
+                num = cell[1]
                 if n in primes_set:
-                    cell = numbers_grid[idx]
-                    sq = cell[0]
                     self.play(
-                        sq.animate.set_fill(GREEN, opacity=0.6),
+                        sq.animate.set_fill(YELLOW, opacity=1.0),
+                        num.animate.set_color(BLACK),
+                        run_time=0.08,
+                    )
+                else:
+                    self.play(
+                        sq.animate.set_fill(DARK_GRAY, opacity=0.7),
                         run_time=0.08,
                     )
 
@@ -488,13 +443,13 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "or in our case, how many pairs of integers "
                  "are simultaneously prime."
         ):
-            pass
+            self.play(FadeIn(goal_note, shift=RIGHT * 0.3), run_time=1.0)
 
         self.wait(1.0)
         clear_screen(self)
 
     # ------------------------------------------------------------------
-    # Scene 5a: Admissible Tuples — Motivation and definition
+    # Scene 5a: Admissible Tuples — Definition
     # ------------------------------------------------------------------
     def admissible_tuples_part1(self):
         header = Tex(
@@ -571,11 +526,15 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
 
         with self.voiceover(
             text=get_phonetic_text("For example, if you look at n and n plus one, "
-                 "one of them is always even, "
-                 "so they cannot both be prime except for the pair two and three."),
+                 "modulo two they are zero and one. "
+                 "They hit both residue classes, "
+                 "so one of them is always even, "
+                 "and they cannot both be prime except for the pair two and three."),
             subcaption="For example, if you look at n and n plus one, "
-                 "one of them is always even, "
-                 "so they cannot both be prime except for the pair two and three."
+                 "modulo two they are zero and one. "
+                 "They hit both residue classes, "
+                 "so one of them is always even, "
+                 "and they cannot both be prime except for the pair two and three."
         ):
             self.play(FadeIn(bad_example), run_time=1.5)
             self.play(FadeIn(bad_mod2_group), run_time=1.0)
@@ -605,37 +564,40 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def admissible_tuples_part2(self):
         header = Tex(
             r"\textbf{Admissible Tuples}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
+        # Left: good example text
         example = Tex(
             r"Good: $\mathcal{H} = \{0, 2, 6\}$",
-            font_size=28,
+            font_size=30,
             color=GREEN,
         )
+        example.set_x(-2.5).shift(UP * 2.0)
+
         mod2 = Tex(
-            r"$\bmod\, 2$: $\{0, 0, 0\}$ --- 1 of 2 classes",
+            r"$\bmod 2$: $\{0, 0, 0\}$ — 1 of 2 classes",
             font_size=24,
             color=TEAL,
         )
+        mod2.set_x(-2.5).shift(UP * 1.2)
+
         mod3 = Tex(
-            r"$\bmod\, 3$: $\{0, 2, 0\}$ --- 2 of 3 classes",
+            r"$\bmod 3$: $\{0, 2, 0\}$ — 2 of 3 classes",
             font_size=24,
             color=TEAL,
         )
+        mod3.set_x(-2.5).shift(UP * 0.5)
+
         mod5 = Tex(
-            r"$\bmod\, 5$: $\{0, 2, 1\}$ --- 3 of 5 classes",
+            r"$\bmod 5$: $\{0, 2, 1\}$ — 3 of 5 classes",
             font_size=24,
             color=TEAL,
         )
+        mod5.set_x(-2.5).shift(DOWN * 0.2)
 
-        content = VGroup(example, mod2, mod3, mod5)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
-
+        # Right: residue class visualizations
         def make_residue_classes(p, hits, size=0.3):
             group = VGroup()
             for i in range(p):
@@ -652,49 +614,60 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
             group.arrange(RIGHT, buff=0.15)
             return group
 
+        good_mod2_label = Tex(r"$\{0,2,6\} \bmod 2$:", font_size=20)
+        good_mod2_circles = make_residue_classes(2, {0}, size=0.35)
+        good_mod2_group = VGroup(good_mod2_label, good_mod2_circles)
+        good_mod2_group.arrange(RIGHT, buff=0.3)
+        good_mod2_group.set_x(2.5).shift(UP * 1.8)
+
+        good_mod3_label = Tex(r"$\{0,2,6\} \bmod 3$:", font_size=20)
+        good_mod3_circles = make_residue_classes(3, {0, 2}, size=0.3)
+        good_mod3_group = VGroup(good_mod3_label, good_mod3_circles)
+        good_mod3_group.arrange(RIGHT, buff=0.3)
+        good_mod3_group.set_x(2.5).shift(UP * 0.5)
+
+        good_mod5_label = Tex(r"$\{0,2,6\} \bmod 5$:", font_size=20)
+        good_mod5_circles = make_residue_classes(5, {0, 1, 2}, size=0.25)
+        good_mod5_group = VGroup(good_mod5_label, good_mod5_circles)
+        good_mod5_group.arrange(RIGHT, buff=0.3)
+        good_mod5_group.set_x(2.5).shift(DOWN * 1.0)
+
         with self.voiceover(
             text=get_phonetic_text("For example, the tuple zero, two, six is admissible. "
                  "Modulo two, all three elements are zero, "
-                 "so they only hit one residue class. "
-                 "Modulo three, they hit zero and two, missing the class one. "
-                 "So there is no local obstruction to all three "
-                 "being prime simultaneously."),
+                 "so they only hit one residue class."),
             subcaption="For example, the tuple zero, two, six is admissible. "
                  "Modulo two, all three elements are zero, "
-                 "so they only hit one residue class. "
-                 "Modulo three, they hit zero and two, missing the class one. "
-                 "So there is no local obstruction to all three "
-                 "being prime simultaneously."
+                 "so they only hit one residue class."
         ):
             self.play(Write(header), run_time=1.0)
             self.play(FadeIn(example), run_time=0.8)
+            self.play(FadeIn(good_mod2_label), FadeIn(good_mod2_circles), run_time=1.0)
+            self.play(FadeIn(mod2), run_time=0.8)
 
-            good_mod2_label = Tex(r"$\{0,2,6\} \bmod 2$:", font_size=22)
-            good_mod2_circles = make_residue_classes(2, {0}, size=0.25)
-            good_mod2_circles.next_to(good_mod2_label, RIGHT, buff=0.3)
-            good_mod2_group = VGroup(good_mod2_label, good_mod2_circles)
-            good_mod2_group.set_x(0)
+        self.wait(0.3)
 
-            good_mod3_label = Tex(r"$\{0,2,6\} \bmod 3$:", font_size=22)
-            good_mod3_circles = make_residue_classes(3, {0, 2}, size=0.25)
-            good_mod3_circles.next_to(good_mod3_label, RIGHT, buff=0.3)
-            good_mod3_group = VGroup(good_mod3_label, good_mod3_circles)
-            good_mod3_group.set_x(0)
+        with self.voiceover(
+            text=get_phonetic_text("Modulo three, they hit zero and two, missing the class one. "
+                 "So there is no local obstruction to all three "
+                 "being prime simultaneously."),
+            subcaption="Modulo three, they hit zero and two, missing the class one. "
+                 "So there is no local obstruction to all three "
+                 "being prime simultaneously."
+        ):
+            self.play(FadeIn(good_mod3_label), FadeIn(good_mod3_circles), run_time=1.0)
+            self.play(FadeIn(mod3), run_time=0.8)
 
-            good_mod5_label = Tex(r"$\{0,2,6\} \bmod 5$:", font_size=22)
-            good_mod5_circles = make_residue_classes(5, {0, 1, 2}, size=0.2)
-            good_mod5_circles.next_to(good_mod5_label, RIGHT, buff=0.3)
-            good_mod5_group = VGroup(good_mod5_label, good_mod5_circles)
-            good_mod5_group.set_x(0)
+        self.wait(0.3)
 
-            self.play(FadeIn(good_mod2_group), run_time=0.8)
-            self.play(FadeIn(mod2), run_time=0.6)
-            self.wait(0.3)
-            self.play(FadeIn(good_mod3_group), run_time=0.8)
-            self.play(FadeIn(mod3), run_time=0.6)
-            self.wait(0.3)
-            self.play(FadeIn(good_mod5_group), run_time=0.8)
-            self.play(FadeIn(mod5), run_time=0.6)
+        with self.voiceover(
+            text=get_phonetic_text("Modulo five, they hit zero, one, and two — three out of five classes. "
+                 "Again, no obstruction."),
+            subcaption="Modulo five, they hit zero, one, and two — three out of five classes. "
+                 "Again, no obstruction."
+        ):
+            self.play(FadeIn(good_mod5_label), FadeIn(good_mod5_circles), run_time=1.0)
+            self.play(FadeIn(mod5), run_time=0.8)
 
         self.wait(1.0)
         clear_screen(self)
@@ -705,31 +678,72 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def gpy_sieve_method_part1(self):
         header = Tex(
             r"\textbf{The GPY Sieve Method}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
         idea = Tex(
-            r"\textbf{Key idea:} Weight integers by how ``prime-rich'' they are",
-            font_size=26,
+            r"Weight integers by how ``prime-rich'' they are",
+            font_size=24,
             color=TEAL,
         )
+        idea.next_to(header, DOWN, buff=0.4)
+
+        # Left: equation
         sum_label = Tex(
-            r"\textbf{Weighted sum:}",
-            font_size=28,
+            r"Weighted sum:",
+            font_size=22,
         )
+        sum_label.shift(UP * 1.2).set_x(-3.0)
+
         sum_eq = MathTex(
             r"S = \sum_{n \leq x} "
-            r"\left( \sum_{i=1}^{k} \Lambda(n + h_i) - \rho \right) "
+            r"\left( \sum_{i=1}^{k} ",
+            r"\Lambda",
+            r"(n + h_i) - ",
+            r"\rho",
+            r" \right) ",
             r"w(n)^2",
-            font_size=26,
+            font_size=24,
         )
+        sum_eq.next_to(sum_label, DOWN, buff=0.15, aligned_edge=LEFT)
 
-        content = VGroup(idea, sum_label, sum_eq)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        left_group = VGroup(sum_label, sum_eq)
+        left_group.set_x(-3.0).shift(UP * 0.5)
+
+        # Right: definitions stacked vertically
+        defs_y = 1.5
+        defs_x = 1.5
+
+        lambda_def = MathTex(
+            r"\Lambda(n) = \begin{cases} \log p & n = p^m \\ 0 & \text{otherwise} \end{cases}",
+            font_size=18,
+        )
+        lambda_def.set_x(defs_x).shift(UP * defs_y)
+        lambda_label = Tex(r"von Mangoldt", font_size=16, color=GRAY)
+        lambda_label.next_to(lambda_def, DOWN, buff=0.1)
+
+        weight_def = MathTex(
+            r"w(n) = \sum_{d \mid P(n)} \lambda_d",
+            font_size=18,
+        )
+        weight_def.set_x(defs_x).shift(UP * (defs_y - 1.3))
+        weight_label = Tex(r"sieve weight", font_size=16, color=GRAY)
+        weight_label.next_to(weight_def, DOWN, buff=0.1)
+
+        rho_def = MathTex(
+            r"\rho = \text{threshold}",
+            font_size=18,
+        )
+        rho_def.set_x(defs_x).shift(UP * (defs_y - 2.6))
+        rho_label = Tex(r"$S>0 \Rightarrow >\rho$ primes", font_size=16, color=GREEN)
+        rho_label.next_to(rho_def, DOWN, buff=0.1)
+
+        right_content = VGroup(
+            lambda_def, lambda_label,
+            weight_def, weight_label,
+            rho_def, rho_label,
+        )
 
         with self.voiceover(
             text=get_phonetic_text("The G P Y method, named after Goldston, Pintz, and Yildirim, "
@@ -740,98 +754,150 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "Here is the key idea."
         ):
             self.play(Write(header), run_time=1.5)
-            self.play(FadeIn(idea), run_time=1.0)
+            self.wait(0.5)
+            self.play(FadeIn(idea), run_time=1.5)
 
-        self.wait(0.5)
+        self.wait(1.0)
 
         with self.voiceover(
             text=get_phonetic_text("Instead of looking at individual primes, "
                  "we look at a weighted sum over integers n, "
                  "where the weight is designed to be large "
-                 "when many of the shifted values n plus h sub i "
+                 "when many of the shifted values n plus h i "
                  "are simultaneously prime."),
             subcaption="Instead of looking at individual primes, "
                  "we look at a weighted sum over integers n, "
                  "where the weight is designed to be large "
-                 "when many of the shifted values n plus h sub i "
+                 "when many of the shifted values n plus h i "
                  "are simultaneously prime."
         ):
-            self.play(FadeIn(sum_label), run_time=0.8)
-            self.play(FadeIn(sum_eq), run_time=2.0)
+            self.play(FadeIn(left_group), run_time=2.5)
+
+        self.wait(1.0)
+
+        with self.voiceover(
+            text=get_phonetic_text("Let us break down each piece. "
+                 "Lambda is the von Mangoldt function: "
+                 "it equals log p when n is a prime power, and zero otherwise. "
+                 "So it detects primes."),
+            subcaption="Let us break down each piece. "
+                 "Lambda is the von Mangoldt function: "
+                 "it equals log p when n is a prime power, and zero otherwise. "
+                 "So it detects primes."
+        ):
+            self.play(FadeIn(lambda_def), run_time=1.5)
+            self.play(FadeIn(lambda_label), run_time=0.8)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("w of n is a sieve weight, "
+                 "a sum over divisors of the product of all shifts. "
+                 "The coefficients are chosen to optimize the sum."),
+            subcaption="w of n is a sieve weight, "
+                 "a sum over divisors of the product of all shifts. "
+                 "The coefficients are chosen to optimize the sum."
+        ):
+            self.play(FadeIn(weight_def), run_time=1.5)
+            self.play(FadeIn(weight_label), run_time=0.8)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("Rho is a threshold parameter. "
+                 "If the weighted sum is positive, "
+                 "it means more than rho of the shifts are prime for some n. "
+                 "By choosing rho carefully, "
+                 "one can guarantee at least two shifts are prime simultaneously."),
+            subcaption="Rho is a threshold parameter. "
+                 "If the weighted sum is positive, "
+                 "it means more than rho of the shifts are prime for some n. "
+                 "By choosing rho carefully, "
+                 "one can guarantee at least two shifts are prime simultaneously."
+        ):
+            self.play(FadeIn(rho_def), run_time=1.5)
+            self.play(FadeIn(rho_label), run_time=0.8)
 
         self.wait(1.0)
         clear_screen(self)
 
     # ------------------------------------------------------------------
-    # Scene 6b: GPY Sieve Method — Lambda, weights, conclusion
+    # Scene 6b: GPY Sieve Method — Conclusion and takeaway
     # ------------------------------------------------------------------
     def gpy_sieve_method_part2(self):
         header = Tex(
             r"\textbf{The GPY Sieve Method}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        lambda_def = MathTex(
-            r"\Lambda(n) = \begin{cases} \log p & \text{if } n = p^m \\ 0 & \text{otherwise} \end{cases}",
-            font_size=24,
-        )
-        weight_def = MathTex(
-            r"w(n) = \sum_{d \mid P(n)} \lambda_d, \quad P(n) = \prod_{i=1}^k (n + h_i)",
-            font_size=24,
-        )
-        conclusion = Tex(
-            r"If $S > 0$, then $\exists\, n$ with $> \rho$ primes among $\{n+h_i\}$",
+        conclusion = MathTex(
+            r"S > 0 \implies \exists\, n \text{ with } > \rho \text{ primes among } \{n+h_i\}",
             font_size=26,
             color=GREEN,
         )
+        takeaway = Tex(
+            r"Set $\rho = 1$ to guarantee two primes simultaneously",
+            font_size=26,
+            color=TEAL,
+        )
+        barrier_note = Tex(
+            r"But proving $S > 0$ requires $\theta > 1/2$",
+            font_size=24,
+            color=RED,
+        )
 
-        content = VGroup(lambda_def, weight_def, conclusion)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        content = VGroup(conclusion, takeaway, barrier_note)
+        content.arrange(DOWN, aligned_edge=LEFT, buff=0.4)
+        content.move_to(ORIGIN).shift(UP * 0.5)
 
         with self.voiceover(
-            text=get_phonetic_text("The inner sum counts primes among the shifts "
-                 "using the von Mangoldt function. "
-                 "Recall that the von Mangoldt function of n "
-                 "is log p if n is a power of a prime p, "
-                 "and zero otherwise. "
-                 "So it essentially detects prime powers."),
-            subcaption="The inner sum counts primes among the shifts "
-                 "using the von Mangoldt function. "
-                 "Recall that the von Mangoldt function of n "
-                 "is log p if n is a power of a prime p, "
-                 "and zero otherwise. "
-                 "So it essentially detects prime powers."
+            text=get_phonetic_text("So the conclusion is clear. "
+                 "If we can make this weighted sum positive, "
+                 "then there exists some n where more than rho of the shifts are prime."),
+            subcaption="So the conclusion is clear. "
+                 "If we can make this weighted sum positive, "
+                 "then there exists some n where more than rho of the shifts are prime."
         ):
             self.play(Write(header), run_time=1.5)
-            self.play(FadeIn(lambda_def), run_time=2.0)
+            self.play(FadeIn(conclusion), run_time=2.0)
 
         self.wait(0.5)
 
         with self.voiceover(
-            text=get_phonetic_text("The weight w of n is a sieve weight, "
-                 "a sum over divisors d of the product of all shifts. "
-                 "The coefficients lambda sub d are chosen to optimize the sum. "
-                 "The parameter rho is a threshold. "
-                 "If the weighted sum is positive, "
-                 "it means that for some n, more than rho of the shifts are prime. "
-                 "By choosing rho carefully and making the sum positive, "
-                 "one can guarantee that at least two shifts are prime simultaneously."),
-            subcaption="The weight w of n is a sieve weight, "
-                 "a sum over divisors d of the product of all shifts. "
-                 "The coefficients lambda sub d are chosen to optimize the sum. "
-                 "The parameter rho is a threshold. "
-                 "If the weighted sum is positive, "
-                 "it means that for some n, more than rho of the shifts are prime. "
-                 "By choosing rho carefully and making the sum positive, "
-                 "one can guarantee that at least two shifts are prime simultaneously."
+            text=get_phonetic_text("So the conclusion is clear. "
+                 "If we can make this weighted sum positive, "
+                 "then there exists some n where more than rho of the shifts are prime."),
+            subcaption="So the conclusion is clear. "
+                 "If we can make this weighted sum positive, "
+                 "then there exists some n where more than rho of the shifts are prime."
         ):
-            self.play(FadeIn(weight_def), run_time=2.0)
-            self.wait(0.5)
-            self.play(FadeIn(conclusion), run_time=1.5)
+            self.play(Write(header), run_time=1.5)
+            self.play(FadeIn(conclusion), run_time=2.0)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("By setting rho equal to one, "
+                 "we guarantee that at least two shifts are prime simultaneously, "
+                 "which gives bounded gaps."),
+            subcaption="By setting rho equal to one, "
+                 "we guarantee that at least two shifts are prime simultaneously, "
+                 "which gives bounded gaps."
+        ):
+            self.play(FadeIn(takeaway), run_time=1.5)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("But proving the sum is positive "
+                 "requires the level of distribution theta to exceed one-half, "
+                 "and that was the barrier no one could break."),
+            subcaption="But proving the sum is positive "
+                 "requires the level of distribution theta to exceed one-half, "
+                 "and that was the barrier no one could break."
+        ):
+            self.play(FadeIn(barrier_note), run_time=1.5)
 
         self.wait(1.0)
         clear_screen(self)
@@ -842,82 +908,149 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def level_of_distribution_part1(self):
         header = Tex(
             r"\textbf{Level of Distribution}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
         ap_label = Tex(
             r"\textbf{Arithmetic progressions:} $a, a+q, a+2q, \dots$",
-            font_size=26,
-        )
-        dirichlet = MathTex(
-            r"\pi(x;q,a) \approx \frac{\pi(x)}{\phi(q)}",
             font_size=28,
         )
+        ap_label.to_edge(LEFT, buff=0.8).shift(UP * 2.8)
 
-        content = VGroup(ap_label, dirichlet)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        dirichlet_note = Tex(
+            r"Dirichlet: each class has infinitely many primes",
+            font_size=22,
+            color=GRAY,
+        )
+        dirichlet_note.next_to(ap_label, DOWN, buff=0.4, aligned_edge=LEFT)
 
-        # Visual: arithmetic progression highlight on number line
-        number_line = NumberLine(
-            x_range=[0, 30, 1],
-            length=10,
-            include_numbers=False,
-            include_ticks=True,
-        ).shift(DOWN * 1.5)
+        intuition_note = Tex(
+            r"Primes split roughly evenly among the $\phi(q)$ classes",
+            font_size=22,
+            color=TEAL,
+        )
+        intuition_note.next_to(dirichlet_note, DOWN, buff=0.4, aligned_edge=LEFT)
 
-        # Highlight progression 1 mod 4: 1, 5, 9, 13, 17, 21, 25, 29
-        ap_dots = VGroup()
-        for n in range(1, 30, 4):
-            pos = number_line.n2p(n)
-            dot = Dot(pos, radius=0.12, color=TEAL)
-            ap_dots.add(dot)
-            lbl = MathTex(str(n), font_size=16, color=TEAL)
-            lbl.next_to(pos, UP, buff=0.15)
-            ap_dots.add(lbl)
+        # Right side: residue class buckets mod 7
+        q = 7
+        coprime_classes = [1, 2, 3, 4, 5, 6]
+        primes_up_to_100 = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+
+        # Create bucket containers for each residue class
+        buckets = VGroup()
+        bucket_labels = VGroup()
+        bucket_counts = VGroup()
+        bucket_dots = VGroup()  # will hold the accumulating dots
+        bar_colors = [BLUE, GREEN, YELLOW, TEAL, PURPLE, MAROON]
+
+        for i, a in enumerate(coprime_classes):
+            # Container outline
+            container = Rectangle(width=0.75, height=2.5, fill_color=BLACK, fill_opacity=0, stroke_width=2, stroke_color=GRAY)
+            container.move_to([i * 1.0 - 2.5, 0, 0])
+            buckets.add(container)
+
+            # Label at bottom
+            lbl = MathTex(f"{a}", font_size=22)
+            lbl.next_to(container, DOWN, buff=0.15)
+            bucket_labels.add(lbl)
+
+            # Count label at top
+            cnt = Tex("0", font_size=18, color=bar_colors[i])
+            cnt.next_to(container, UP, buff=0.1)
+            bucket_counts.add(cnt)
+
+        # Title for buckets
+        bucket_title = Tex(r"Primes mod $7$ — filling buckets", font_size=22, color=GRAY)
+        bucket_title.next_to(buckets, UP, buff=0.6)
+
+        # Equation at bottom
+        dirichlet = MathTex(
+            r"\pi(x;q,a) \approx \frac{\pi(x)}{\phi(q)}",
+            font_size=30,
+        )
+        dirichlet.to_edge(DOWN, buff=0.6)
 
         with self.voiceover(
             text=get_phonetic_text("To make the G P Y sum positive, "
                  "we need to understand how primes are distributed "
                  "in arithmetic progressions. "
                  "An arithmetic progression is a sequence like "
-                 "a, a plus q, a plus two q, and so on, "
-                 "where a and q are coprime."),
+                 "a, a plus q, a plus two q, and so on."),
             subcaption="To make the G P Y sum positive, "
                  "we need to understand how primes are distributed "
                  "in arithmetic progressions. "
                  "An arithmetic progression is a sequence like "
-                 "a, a plus q, a plus two q, and so on, "
-                 "where a and q are coprime."
+                 "a, a plus q, a plus two q, and so on."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(ap_label), run_time=1.0)
-            self.play(Create(number_line), run_time=1.0)
+            self.play(Write(header), run_time=1.5)
+            self.wait(0.5)
+            self.play(FadeIn(ap_label), run_time=1.5)
 
         self.wait(0.5)
 
         with self.voiceover(
             text=get_phonetic_text("Dirichlet's theorem tells us that each such progression "
                  "contains infinitely many primes. "
-                 "But we need a quantitative version: "
-                 "how many primes are there up to x "
-                 "in the progression a mod q? "
-                 "The prime number theorem for arithmetic progressions says "
-                 "this is approximately pi of x divided by phi of q, "
-                 "where phi is Euler's totient function."),
+                 "But here is the key intuition: "
+                 "primes behave almost like random numbers modulo q. "
+                 "They spread out roughly evenly "
+                 "among the phi of q residue classes that are coprime to q."),
             subcaption="Dirichlet's theorem tells us that each such progression "
                  "contains infinitely many primes. "
-                 "But we need a quantitative version: "
-                 "how many primes are there up to x "
-                 "in the progression a mod q? "
-                 "The prime number theorem for arithmetic progressions says "
-                 "this is approximately pi of x divided by phi of q, "
-                 "where phi is Euler's totient function."
+                 "But here is the key intuition: "
+                 "primes behave almost like random numbers modulo q. "
+                 "They spread out roughly evenly "
+                 "among the phi of q residue classes that are coprime to q."
         ):
-            self.play(FadeIn(ap_dots), run_time=1.5)
+            self.play(FadeIn(dirichlet_note), run_time=1.5)
+            self.wait(0.5)
+            self.play(FadeIn(buckets), FadeIn(bucket_labels), FadeIn(bucket_title), run_time=1.5)
+            self.wait(0.5)
+            self.play(FadeIn(intuition_note), run_time=1.5)
+
+        self.wait(0.5)
+
+        # Animate primes falling into buckets
+        with self.voiceover(
+            text=get_phonetic_text("Watch what happens as primes arrive. "
+                 "Each prime falls into one of the six residue classes modulo seven. "
+                 "At first the counts are uneven, "
+                 "but as more primes come in, "
+                 "the buckets fill up at nearly the same rate. "
+                 "This is the prime number theorem for arithmetic progressions: "
+                 "each class gets approximately one over phi of q of all the primes."),
+            subcaption="Watch what happens as primes arrive. "
+                 "Each prime falls into one of the six residue classes modulo seven. "
+                 "At first the counts are uneven, "
+                 "but as more primes come in, "
+                 "the buckets fill up at nearly the same rate. "
+                 "This is the prime number theorem for arithmetic progressions: "
+                 "each class gets approximately one over phi of q of all the primes."
+        ):
+            counts = [0] * len(coprime_classes)
+            for p in primes_up_to_100:
+                if p % q in coprime_classes:
+                    idx = coprime_classes.index(p % q)
+                    counts[idx] += 1
+
+                    # Create a small dot for this prime
+                    dot = Dot(radius=0.06, color=bar_colors[idx])
+                    # Stack dots from bottom up inside the container
+                    dot.move_to(buckets[idx].get_center() + DOWN * 1.1 + UP * (counts[idx] - 1) * 0.12)
+
+                    # Update count label
+                    new_cnt = Tex(str(counts[idx]), font_size=18, color=bar_colors[idx])
+                    new_cnt.move_to(bucket_counts[idx].get_center())
+
+                    self.play(
+                        FadeIn(dot, scale=0.5),
+                        ReplacementTransform(bucket_counts[idx], new_cnt),
+                        run_time=0.15,
+                    )
+                    bucket_counts[idx] = new_cnt
+
+            self.wait(0.5)
             self.play(FadeIn(dirichlet), run_time=2.0)
 
         self.wait(1.0)
@@ -929,54 +1062,125 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def level_of_distribution_part2(self):
         header = Tex(
             r"\textbf{Level of Distribution}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        level_def = MathTex(
-            r"\theta = \sup \left\{ \vartheta : \text{error is small for } q \leq x^\vartheta \right\}",
-            font_size=26,
+        # Top: error term definition (full width)
+        error_label = Tex(
+            r"\textbf{Error term:}",
+            font_size=28,
         )
-        importance = Tex(
-            r"$\bullet$ Larger $\theta$ $\Rightarrow$ more powerful sieve",
-            font_size=26,
+        error_label.to_edge(LEFT, buff=0.8).shift(UP * 1.8)
+
+        error_def = MathTex(
+            r"E(x;q,a) = \pi(x;q,a) - \frac{\pi(x)}{\phi(q)}",
+            font_size=28,
+        )
+        error_def.next_to(error_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        error_note = Tex(
+            r"Deviation from the expected count",
+            font_size=20,
+            color=GRAY,
+        )
+        error_note.next_to(error_def, DOWN, buff=0.2, aligned_edge=LEFT)
+
+        # Bottom: theta definition
+        theta_label = Tex(
+            r"\textbf{Level of distribution $\theta$:}",
+            font_size=28,
+        )
+        theta_label.to_edge(LEFT, buff=0.8).shift(DOWN * 0.5)
+
+        theta_def = MathTex(
+            r"\theta = \sup \left\{ \vartheta : \sum_{q \leq x^\vartheta} "
+            r"\max_a |E(x;q,a)| \text{ is small} \right\}",
+            font_size=20,
+        )
+        theta_def.next_to(theta_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        theta_note = Tex(
+            r"Average error over all moduli $q$ up to $x^\vartheta$",
+            font_size=18,
+            color=GRAY,
+        )
+        theta_note.next_to(theta_def, DOWN, buff=0.2, aligned_edge=LEFT)
+
+        # Right side: importance statements
+        importance_box = RoundedRectangle(
+            width=5.0, height=1.8, corner_radius=0.15,
+            color=TEAL, fill_opacity=0.08, stroke_width=2,
+        )
+        importance_box.to_edge(RIGHT, buff=0.6).shift(UP * 0.3)
+
+        imp1 = Tex(
+            r"Larger $\theta$ $\Rightarrow$ control over larger moduli",
+            font_size=22,
             color=TEAL,
         )
-        importance2 = Tex(
-            r"$\bullet$ $\theta > 1/2$ $\Rightarrow$ bounded prime gaps",
-            font_size=26,
+        imp2 = Tex(
+            r"$\theta > 1/2$ $\Rightarrow$ bounded prime gaps",
+            font_size=22,
             color=GREEN,
         )
-
-        content = VGroup(level_def, importance, importance2)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        imp_group = VGroup(imp1, imp2)
+        imp_group.arrange(DOWN, buff=0.3)
+        imp_group.move_to(importance_box.get_center())
 
         with self.voiceover(
-            text=get_phonetic_text("The level of distribution theta measures "
-                 "how large q can be "
-                 "while this approximation still holds on average "
-                 "over all a coprime to q."),
-            subcaption="The level of distribution theta measures "
-                 "how large q can be "
-                 "while this approximation still holds on average "
-                 "over all a coprime to q."
+            text=get_phonetic_text("Now we can define the level of distribution precisely. "
+                 "The error term E of x comma q comma a "
+                 "measures the deviation between the actual count of primes "
+                 "in the progression a mod q "
+                 "and the expected count pi of x over phi of q."),
+            subcaption="Now we can define the level of distribution precisely. "
+                 "The error term E of x comma q comma a "
+                 "measures the deviation between the actual count of primes "
+                 "in the progression a mod q "
+                 "and the expected count pi of x over phi of q."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(level_def), run_time=2.0)
+            self.play(Write(header), run_time=1.5)
+            self.wait(0.5)
+            self.play(FadeIn(error_label), run_time=1.0)
+            self.play(FadeIn(error_def), run_time=2.0)
+            self.play(FadeIn(error_note), run_time=1.0)
 
         self.wait(0.5)
 
         with self.voiceover(
-            text=get_phonetic_text("If theta is larger, we can handle larger moduli, "
-                 "and the sieve becomes more powerful."),
-            subcaption="If theta is larger, we can handle larger moduli, "
-                 "and the sieve becomes more powerful."
+            text=get_phonetic_text("The level of distribution theta "
+                 "is the largest exponent such that "
+                 "the average error, summed over all moduli q up to x to the theta, "
+                 "remains small compared to x. "
+                 "In other words, how far can we push q "
+                 "before the approximation breaks down?"),
+            subcaption="The level of distribution theta "
+                 "is the largest exponent such that "
+                 "the average error, summed over all moduli q up to x to the theta, "
+                 "remains small compared to x. "
+                 "In other words, how far can we push q "
+                 "before the approximation breaks down?"
         ):
-            self.play(FadeIn(importance), run_time=1.0)
-            self.play(FadeIn(importance2), run_time=1.0)
+            self.play(FadeIn(theta_label), run_time=1.0)
+            self.play(FadeIn(theta_def), run_time=2.5)
+            self.play(FadeIn(theta_note), run_time=1.0)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("If theta is larger, we can control the error "
+                 "for larger moduli, and the sieve becomes more powerful. "
+                 "And if theta exceeds one-half, "
+                 "we get bounded prime gaps."),
+            subcaption="If theta is larger, we can control the error "
+                 "for larger moduli, and the sieve becomes more powerful. "
+                 "And if theta exceeds one-half, "
+                 "we get bounded prime gaps."
+        ):
+            self.play(Create(importance_box), run_time=1.0)
+            self.play(FadeIn(imp1), run_time=1.5)
+            self.play(FadeIn(imp2), run_time=1.5)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1067,59 +1271,74 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def gpy_barrier_part2(self):
         header = Tex(
             r"\textbf{The GPY Barrier}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
         note = Tex(
             r"This was the fundamental barrier that blocked progress for years.",
-            font_size=26,
+            font_size=24,
             color=RED,
         )
-        note.next_to(header, DOWN, buff=0.5).set_x(0)
+        note.next_to(header, DOWN, buff=0.4).set_x(0)
 
-        # Visual: theta scale with barrier line
+        # Visual: theta scale centered on screen
         theta_line = NumberLine(
-            x_range=[0, 1, 0.1],
-            length=6,
+            x_range=[0, 1, 0.5],
+            length=8,
+            include_ticks=True,
             include_numbers=True,
-        ).shift(DOWN * 1)
+            font_size=32,
+        ).move_to(ORIGIN)
 
-        half_mark = Line(
-            start=theta_line.n2p(0.5) + UP * 0.5,
-            end=theta_line.n2p(0.5) + DOWN * 0.5,
+        # Half barrier line — tall, clearly visible
+        half_mark = DashedLine(
+            start=theta_line.n2p(0.5) + UP * 2.5,
+            end=theta_line.n2p(0.5) + DOWN * 2.5,
             color=RED,
-            stroke_width=4,
+            stroke_width=3,
+            dash_length=0.1,
         )
-        half_label = Tex(r"$\theta = 1/2$", font_size=20, color=RED)
+        half_label = Tex(r"$\theta = 1/2$", font_size=28, color=RED)
         half_label.next_to(half_mark, UP, buff=0.1)
 
-        bv_region = Line(
-            start=theta_line.n2p(0) + DOWN * 0.3,
-            end=theta_line.n2p(0.5) + DOWN * 0.3,
-            color=BLUE,
-            stroke_width=6,
+        # BV region — well below the number line
+        bv_rect = Rectangle(
+            width=4.0,
+            height=0.6,
+            fill_color=BLUE,
+            fill_opacity=0.15,
+            stroke_color=BLUE,
+            stroke_width=2,
         )
-        bv_label = Tex(r"Bombieri--Vinogradov", font_size=18, color=BLUE)
-        bv_label.next_to(bv_region, DOWN, buff=0.1)
+        bv_rect.move_to(theta_line.n2p(0.25) + DOWN * 1.8)
+        bv_label = Tex(r"Bombieri--Vinogradov: known", font_size=24, color=BLUE)
+        bv_label.move_to(bv_rect.get_center())
 
-        gpy_region = Line(
-            start=theta_line.n2p(0.5) + UP * 0.7,
-            end=theta_line.n2p(1.0) + UP * 0.7,
-            color=GREEN,
-            stroke_width=6,
+        # GPY region — above the line, right of barrier
+        gpy_rect = Rectangle(
+            width=3.8,
+            height=0.6,
+            fill_color=GREEN,
+            fill_opacity=0.15,
+            stroke_color=GREEN,
+            stroke_width=2,
         )
-        gpy_label = Tex(r"GPY needs this", font_size=18, color=GREEN)
-        gpy_label.next_to(gpy_region, UP, buff=0.1)
+        gpy_rect.move_to(theta_line.n2p(0.75) + UP * 1.8)
+        gpy_label = Tex(r"GPY needs this", font_size=24, color=GREEN)
+        gpy_label.move_to(gpy_rect.get_center())
 
-        gap_arrow = DoubleArrow(
-            start=theta_line.n2p(0.5) + UP * 0.15,
-            end=theta_line.n2p(0.52) + UP * 0.15,
+        # Delta gap indicator
+        gap_brace = Brace(
+            VGroup(
+                Dot(theta_line.n2p(0.5)),
+                Dot(theta_line.n2p(0.52)),
+            ),
+            direction=UP,
             color=YELLOW,
-            stroke_width=3,
         )
-        gap_label = Tex(r"$\delta$", font_size=20, color=YELLOW)
-        gap_label.next_to(gap_arrow, UP, buff=0.1)
+        gap_label = Tex(r"$\delta$", font_size=22, color=YELLOW)
+        gap_label.next_to(gap_brace, UP, buff=0.1)
 
         with self.voiceover(
             text=get_phonetic_text("The G P Y method was powerful enough to reduce bounded gaps "
@@ -1129,13 +1348,31 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "to this distribution problem, "
                  "but it could not break past the one-half threshold on its own."
         ):
-            self.play(Write(header), run_time=1.0)
+            self.play(Write(header), run_time=1.5)
             self.play(FadeIn(note), run_time=1.0)
-            self.play(Create(theta_line), run_time=1.0)
-            self.play(Create(half_mark), Write(half_label), run_time=1.0)
-            self.play(Create(bv_region), FadeIn(bv_label), run_time=1.0)
-            self.play(Create(gpy_region), FadeIn(gpy_label), run_time=1.0)
-            self.play(Create(gap_arrow), FadeIn(gap_label), run_time=0.8)
+            self.play(Create(theta_line), run_time=1.5)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("The Bombieri Vinogradov theorem gives us everything up to one-half, "
+                 "but GPY needs just a tiny bit more — some delta beyond one-half."),
+            subcaption="The Bombieri Vinogradov theorem gives us everything up to one-half, "
+                 "but GPY needs just a tiny bit more — some delta beyond one-half."
+        ):
+            self.play(Create(half_mark), Write(half_label), run_time=1.5)
+            self.wait(0.3)
+            self.play(FadeIn(bv_rect), FadeIn(bv_label), run_time=1.5)
+            self.wait(0.3)
+            self.play(FadeIn(gpy_rect), FadeIn(gpy_label), run_time=1.5)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("This tiny gap was the barrier that blocked progress for years."),
+            subcaption="This tiny gap was the barrier that blocked progress for years."
+        ):
+            self.play(Create(gap_brace), FadeIn(gap_label), run_time=1.0)
 
         self.wait(1.5)
         clear_screen(self)
@@ -1146,71 +1383,77 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def zhang_roadmap(self):
         header = Tex(
             r"\textbf{Zhang's Proof Roadmap}",
-            font_size=32,
+            font_size=38,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        step1 = Tex(
-            r"$\bullet$ \textbf{Step 1:} Restrict to smooth moduli",
-            font_size=26,
-        )
-        step1_note = Tex(
-            r"$\phantom{\bullet}$\; Only $q$ with all prime factors $\leq x^\delta$",
-            font_size=24,
-            color=GRAY,
-        )
-        step2 = Tex(
-            r"$\bullet$ \textbf{Step 2:} Type I / Type II decomposition",
-            font_size=26,
-        )
-        step2_note = Tex(
-            r"$\phantom{\bullet}$\; Split error terms by convolution structure",
-            font_size=24,
-            color=GRAY,
-        )
-        step3 = Tex(
-            r"$\bullet$ \textbf{Step 3:} Deligne's bound on Kloosterman sums",
-            font_size=26,
-        )
-        step3_note = Tex(
-            r"$\phantom{\bullet}$\; Deep result from algebraic geometry",
-            font_size=24,
-            color=GRAY,
-        )
-        step4 = Tex(
-            r"$\bullet$ \textbf{Step 4:} Distribution level $\theta = 1/2 + \delta$",
-            font_size=26,
-            color=GREEN,
-        )
-        step4_note = Tex(
-            r"$\phantom{\bullet}$\; $\delta \approx 1/584$",
-            font_size=24,
-            color=GRAY,
-        )
+        step_colors = [BLUE, TEAL, GOLD, GREEN]
+        steps_data = [
+            ("Step 1", r"Restrict to smooth moduli", r"Only $q$ with prime factors $\leq x^\delta$"),
+            ("Step 2", r"Type I / Type II decomposition", r"Split error terms by convolution structure"),
+            ("Step 3", r"Deligne's bound on Kloosterman sums", r"Deep result from algebraic geometry"),
+            ("Step 4", r"Distribution level $\theta = 1/2 + \delta$", r"$\delta \approx 1/584$"),
+        ]
 
-        steps = VGroup(step1, step1_note, step2, step2_note, step3, step3_note, step4, step4_note)
-        steps.arrange(DOWN, aligned_edge=LEFT, buff=0.18)
-        steps.next_to(header, DOWN, buff=0.5)
-        steps.set_x(0)
-        center_mathtex(steps)
+        step_mobs = []
+        for i, (label, name, desc) in enumerate(steps_data):
+            box = RoundedRectangle(
+                width=6.0, height=1.0, corner_radius=0.15,
+                color=step_colors[i],
+                fill_opacity=0.12,
+                stroke_width=2,
+            )
+            lab = Tex(
+                rf"$\bullet$ \textbf{{{label}:}} {name}",
+                font_size=24,
+                color=step_colors[i],
+            )
+            d = Tex(desc, font_size=20, color=GRAY)
+            content = VGroup(lab, d).arrange(DOWN, buff=0.1)
+            content.move_to(box.get_center())
+            step_mobs.append(VGroup(box, content))
+
+        roadmap = VGroup(*step_mobs).arrange(DOWN, buff=0.35)
+        roadmap.next_to(header, DOWN, buff=0.5)
+        roadmap.set_x(0)
+
+        # Arrows between steps
+        arrows = VGroup()
+        for i in range(len(step_mobs) - 1):
+            a = Arrow(
+                step_mobs[i].get_bottom(),
+                step_mobs[i + 1].get_top(),
+                buff=0.05,
+                color=WHITE,
+                stroke_width=2,
+                max_tip_length_to_length_ratio=0.15,
+            )
+            arrows.add(a)
 
         with self.voiceover(
-            text=get_phonetic_text("Zhang's proof follows a clear four-step roadmap. "
-                 "Step one: instead of summing over all moduli q, "
-                 "he restricts to smooth moduli, "
-                 "meaning q whose prime factors are all small. "
-                 "This restriction is mild but crucial."),
-            subcaption="Zhang's proof follows a clear four-step roadmap. "
-                 "Step one: instead of summing over all moduli q, "
-                 "he restricts to smooth moduli, "
-                 "meaning q whose prime factors are all small. "
-                 "This restriction is mild but crucial."
+            text=get_phonetic_text("Zhang's proof follows a clear four-step roadmap."),
+            subcaption="Zhang's proof follows a clear four-step roadmap."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(step1, shift=RIGHT * 0.3), run_time=1.0)
-            self.play(FadeIn(step1_note, shift=RIGHT * 0.3), run_time=0.8)
+            self.play(Write(header), run_time=1.5)
 
         self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("Step one: instead of summing over all moduli q, "
+                 "Zhang restricts to smooth moduli. "
+                 "A smooth modulus is a number whose prime factors are all small — "
+                 "bounded by some tiny power of x. "
+                 "This restriction is mild, but it turns out to be crucial."),
+            subcaption="Step one: instead of summing over all moduli q, "
+                 "Zhang restricts to smooth moduli. "
+                 "A smooth modulus is a number whose prime factors are all small — "
+                 "bounded by some tiny power of x. "
+                 "This restriction is mild, but it turns out to be crucial."
+        ):
+            self.play(FadeIn(step_mobs[0], shift=RIGHT * 0.3), run_time=1.0)
+            self.play(Create(arrows[0]), run_time=0.5)
+
+        self.wait(0.3)
 
         with self.voiceover(
             text=get_phonetic_text("Step two: he decomposes the error terms "
@@ -1222,40 +1465,39 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "Type one sums have a simple convolution structure, "
                  "while Type two sums are bilinear forms."
         ):
-            self.play(FadeIn(step2, shift=RIGHT * 0.3), run_time=1.0)
-            self.play(FadeIn(step2_note, shift=RIGHT * 0.3), run_time=0.8)
+            self.play(FadeIn(step_mobs[1], shift=RIGHT * 0.3), run_time=1.0)
+            self.play(Create(arrows[1]), run_time=0.5)
 
-        self.wait(0.5)
+        self.wait(0.3)
 
         with self.voiceover(
             text=get_phonetic_text("Step three: for the Type two sums, "
-                 "he applies Deligne's bound on Kloosterman sums, "
-                 "a deep result from algebraic geometry "
+                 "he applies Deligne's bound on Kloosterman sums. "
+                 "This is a deep result from algebraic geometry, "
                  "proved as part of the Weil conjectures."),
             subcaption="Step three: for the Type two sums, "
-                 "he applies Deligne's bound on Kloosterman sums, "
-                 "a deep result from algebraic geometry "
+                 "he applies Deligne's bound on Kloosterman sums. "
+                 "This is a deep result from algebraic geometry, "
                  "proved as part of the Weil conjectures."
         ):
-            self.play(FadeIn(step3, shift=RIGHT * 0.3), run_time=1.0)
-            self.play(FadeIn(step3_note, shift=RIGHT * 0.3), run_time=0.8)
+            self.play(FadeIn(step_mobs[2], shift=RIGHT * 0.3), run_time=1.0)
+            self.play(Create(arrows[2]), run_time=0.5)
 
-        self.wait(0.5)
+        self.wait(0.3)
 
         with self.voiceover(
             text=get_phonetic_text("Step four: combining all estimates, "
                  "he shows the distribution level exceeds one-half "
-                 "by a tiny amount, "
-                 "approximately one over five hundred eighty-four."),
+                 "by a tiny amount — delta is approximately one over five hundred eighty-four. "
+                 "That tiny gain is enough to break the G P Y barrier."),
             subcaption="Step four: combining all estimates, "
                  "he shows the distribution level exceeds one-half "
-                 "by a tiny amount, "
-                 "approximately one over five hundred eighty-four."
+                 "by a tiny amount — delta is approximately one over five hundred eighty-four. "
+                 "That tiny gain is enough to break the G P Y barrier."
         ):
-            self.play(FadeIn(step4, shift=RIGHT * 0.3), run_time=1.0)
-            self.play(FadeIn(step4_note, shift=RIGHT * 0.3), run_time=0.8)
+            self.play(FadeIn(step_mobs[3], shift=RIGHT * 0.3), run_time=1.0)
 
-        self.wait(1.0)
+        self.wait(1.5)
         clear_screen(self)
 
     # ------------------------------------------------------------------
@@ -1264,29 +1506,58 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def zhang_breakthrough_part1(self):
         header = Tex(
             r"\textbf{Step 1: Smooth Moduli}",
-            font_size=32,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
+
+        # Center: definition
+        def_label = Tex(
+            r"\textbf{Definition:}",
+            font_size=28,
+        )
+        def_label.shift(UP * 1.5)
 
         smooth_def = MathTex(
             r"q \text{ is } y\text{-smooth if } p \mid q \implies p \leq y",
             font_size=26,
         )
+        smooth_def.next_to(def_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
         example = Tex(
             r"Example: $12 = 2^2 \cdot 3$ is 3-smooth",
             font_size=26,
             color=TEAL,
         )
-        zhang_choice = MathTex(
-            r"y = x^\delta, \quad \delta \approx \frac{1}{584}",
+        example.next_to(smooth_def, DOWN, buff=0.5, aligned_edge=LEFT)
+
+        left_content = VGroup(def_label, smooth_def, example)
+        left_content.set_x(-2.0)
+
+        # Right side: Zhang's choice
+        zhang_label = Tex(
+            r"\textbf{Zhang's choice:}",
             font_size=28,
         )
+        zhang_label.shift(UP * 1.5)
 
-        content = VGroup(smooth_def, example, zhang_choice)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        zhang_choice = MathTex(
+            r"y = x^\delta, \quad \delta \approx \frac{1}{584}",
+            font_size=30,
+        )
+        zhang_choice.next_to(zhang_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        zhang_note = Tex(
+            r"Very small, but enough to break the barrier",
+            font_size=20,
+            color=GRAY,
+        )
+        zhang_note.next_to(zhang_choice, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        right_content = VGroup(zhang_label, zhang_choice, zhang_note)
+        right_content.set_x(2.0)
+
+        right_content = VGroup(zhang_label, zhang_choice, zhang_note)
+        right_content.set_x(2.0)
 
         with self.voiceover(
             text=get_phonetic_text("Let us look at each step in more detail, "
@@ -1302,9 +1573,9 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "For example, twelve is three-smooth "
                  "because twelve equals two squared times three."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(smooth_def), run_time=1.5)
-            self.play(FadeIn(example), run_time=1.0)
+            self.play(Write(header), run_time=1.5)
+            self.wait(0.3)
+            self.play(FadeIn(left_content), run_time=2.0)
 
         self.wait(0.5)
 
@@ -1320,7 +1591,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "where delta is about one over five hundred eighty-four. "
                  "This is a very small exponent, but it is enough."
         ):
-            self.play(FadeIn(zhang_choice), run_time=1.5)
+            self.play(FadeIn(right_content), run_time=2.0)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1402,7 +1673,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def type_sums_part1(self):
         header = Tex(
             r"\textbf{Step 2: Type I and Type II Sums}",
-            font_size=30,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
@@ -1411,26 +1682,47 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
             font_size=28,
             color=TEAL,
         )
+        type1_label.shift(UP * 2.0)
+
         type1_eq = MathTex(
             r"\sum_{m \sim M} \alpha_m \sum_{n \sim N} \psi(mn)",
             font_size=26,
         )
+        type1_eq.next_to(type1_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
         type1_cond = MathTex(
             r"M \leq x^{1/2 + \delta}, \quad N = x / M \text{ is long}",
-            font_size=24,
+            font_size=22,
             color=GRAY,
         )
-        type1_note = Tex(
-            r"$\phantom{\bullet}$\; Easier: long range gives cancellation",
-            font_size=24,
-            color=GRAY,
-        )
+        type1_cond.next_to(type1_eq, DOWN, buff=0.3, aligned_edge=LEFT)
 
-        content = VGroup(type1_label, type1_eq, type1_cond, type1_note)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        type1_note = Tex(
+            r"$\bullet$ Easier: long range gives cancellation",
+            font_size=22,
+            color=GRAY,
+        )
+        type1_note.next_to(type1_cond, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        left_content = VGroup(type1_label, type1_eq, type1_cond, type1_note)
+        left_content.set_x(-2.5)
+
+        # Right side: visual bar diagram
+        short_bar = Rectangle(height=0.35, width=1.2, fill_color=TEAL, fill_opacity=0.7, stroke_width=1)
+        long_bar = Rectangle(height=0.35, width=4.0, fill_color=TEAL, fill_opacity=0.35, stroke_width=1)
+        short_label = Tex(r"short $M$", font_size=20)
+        long_label = Tex(r"long $N = x/M$", font_size=20)
+        short_label.move_to(short_bar)
+        long_label.move_to(long_bar)
+        type1_vis = VGroup(
+            VGroup(short_bar, short_label),
+            VGroup(long_bar, long_label),
+        )
+        type1_vis.arrange(RIGHT, buff=0.4)
+        type1_vis.set_x(2.0).shift(UP * 0.5)
+
+        vis_label = Tex(r"Range sizes:", font_size=20, color=GRAY)
+        vis_label.next_to(type1_vis, UP, buff=0.3)
 
         with self.voiceover(
             text=get_phonetic_text("After restricting to smooth moduli, "
@@ -1446,7 +1738,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "in arithmetic progressions and the expected count. "
                  "Zhang decomposes these error terms into two types."
         ):
-            self.play(Write(header), run_time=1.0)
+            self.play(Write(header), run_time=1.5)
 
         self.wait(0.5)
 
@@ -1466,26 +1758,8 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "These are easier to handle "
                  "because the long variable gives cancellation."
         ):
-            self.play(FadeIn(type1_label), run_time=0.8)
-            self.play(FadeIn(type1_eq), run_time=1.5)
-            self.play(FadeIn(type1_cond), run_time=1.0)
-
-            short_bar = Rectangle(height=0.3, width=1.5, fill_color=TEAL, fill_opacity=0.6, stroke_width=1)
-            long_bar = Rectangle(height=0.3, width=5, fill_color=TEAL, fill_opacity=0.3, stroke_width=1)
-            short_label = Tex(r"short $M$", font_size=18)
-            long_label = Tex(r"long $N = x/M$", font_size=18)
-            short_label.move_to(short_bar)
-            long_label.move_to(long_bar)
-            type1_vis = VGroup(
-                VGroup(short_bar, short_label),
-                VGroup(long_bar, long_label),
-            )
-            type1_vis.arrange(RIGHT, buff=0.3)
-            type1_vis.next_to(type1_eq, DOWN, buff=0.3)
-            type1_vis.set_x(0)
-
-            self.play(FadeIn(type1_vis), run_time=1.0)
-            self.play(FadeIn(type1_note, shift=RIGHT * 0.3), run_time=0.8)
+            self.play(FadeIn(left_content), run_time=2.0)
+            self.play(FadeIn(vis_label), FadeIn(type1_vis), run_time=1.5)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1496,7 +1770,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def type_sums_part2(self):
         header = Tex(
             r"\textbf{Step 2: Type I and Type II Sums}",
-            font_size=30,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
@@ -1505,26 +1779,47 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
             font_size=28,
             color=GOLD,
         )
+        type2_label.shift(UP * 2.0)
+
         type2_eq = MathTex(
             r"\sum_{m \sim M} \sum_{n \sim N} \alpha_m \beta_n \, \psi(mn)",
             font_size=26,
         )
+        type2_eq.next_to(type2_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
         type2_cond = MathTex(
             r"x^\delta \leq M, N \leq x^{1/2 + \delta}",
-            font_size=24,
+            font_size=22,
             color=GRAY,
         )
-        type2_note = Tex(
-            r"$\phantom{\bullet}$\; Harder: needs Cauchy-Schwarz + Kloosterman",
-            font_size=24,
-            color=GRAY,
-        )
+        type2_cond.next_to(type2_eq, DOWN, buff=0.3, aligned_edge=LEFT)
 
-        content = VGroup(type2_label, type2_eq, type2_cond, type2_note)
-        content.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        content.next_to(header, DOWN, buff=0.5)
-        content.set_x(0)
-        center_mathtex(content)
+        type2_note = Tex(
+            r"$\bullet$ Harder: needs Cauchy-Schwarz + Kloosterman",
+            font_size=22,
+            color=GRAY,
+        )
+        type2_note.next_to(type2_cond, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        left_content = VGroup(type2_label, type2_eq, type2_cond, type2_note)
+        left_content.set_x(-2.5)
+
+        # Right side: visual bar diagram
+        mod_bar1 = Rectangle(height=0.35, width=2.5, fill_color=GOLD, fill_opacity=0.6, stroke_width=1)
+        mod_bar2 = Rectangle(height=0.35, width=2.5, fill_color=GOLD, fill_opacity=0.6, stroke_width=1)
+        mod_label1 = Tex(r"moderate $M$", font_size=20)
+        mod_label2 = Tex(r"moderate $N$", font_size=20)
+        mod_label1.move_to(mod_bar1)
+        mod_label2.move_to(mod_bar2)
+        type2_vis = VGroup(
+            VGroup(mod_bar1, mod_label1),
+            VGroup(mod_bar2, mod_label2),
+        )
+        type2_vis.arrange(RIGHT, buff=0.4)
+        type2_vis.set_x(2.0).shift(UP * 0.5)
+
+        vis_label = Tex(r"Both moderate:", font_size=20, color=GRAY)
+        vis_label.next_to(type2_vis, UP, buff=0.3)
 
         with self.voiceover(
             text=get_phonetic_text("Type two sums are bilinear. "
@@ -1544,27 +1839,9 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "to use Cauchy-Schwarz "
                  "and reduce to estimating Kloosterman sums."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(type2_label), run_time=0.8)
-            self.play(FadeIn(type2_eq), run_time=1.5)
-            self.play(FadeIn(type2_cond), run_time=1.0)
-
-            mod_bar1 = Rectangle(height=0.3, width=2.5, fill_color=GOLD, fill_opacity=0.5, stroke_width=1)
-            mod_bar2 = Rectangle(height=0.3, width=2.5, fill_color=GOLD, fill_opacity=0.5, stroke_width=1)
-            mod_label1 = Tex(r"moderate $M$", font_size=18)
-            mod_label2 = Tex(r"moderate $N$", font_size=18)
-            mod_label1.move_to(mod_bar1)
-            mod_label2.move_to(mod_bar2)
-            type2_vis = VGroup(
-                VGroup(mod_bar1, mod_label1),
-                VGroup(mod_bar2, mod_label2),
-            )
-            type2_vis.arrange(RIGHT, buff=0.3)
-            type2_vis.next_to(type2_eq, DOWN, buff=0.3)
-            type2_vis.set_x(0)
-
-            self.play(FadeIn(type2_vis), run_time=1.0)
-            self.play(FadeIn(type2_note, shift=RIGHT * 0.3), run_time=0.8)
+            self.play(Write(header), run_time=1.5)
+            self.play(FadeIn(left_content), run_time=2.0)
+            self.play(FadeIn(vis_label), FadeIn(type2_vis), run_time=1.5)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1575,153 +1852,315 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
     def deligne_bound_part1(self):
         header = Tex(
             r"\textbf{Step 3: Deligne's Bound on Kloosterman Sums}",
-            font_size=28,
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        kl_label = Tex(
-            r"\textbf{Kloosterman sum:}",
-            font_size=28,
-        )
+        # Center the equation
         kl_def = MathTex(
             r"K(a, b; p) = \sum_{x \in \mathbb{F}_p^\times} "
             r"e\!\left(\frac{ax + b\overline{x}}{p}\right)",
-            font_size=26,
+            font_size=32,
         )
+        kl_def.next_to(header, DOWN, buff=0.6)
+
+        # Labels for terms
+        linear_label = Tex(r"linear term", font_size=22, color=TEAL)
+        inverse_label = Tex(r"mult. inverse", font_size=22, color=GOLD)
+
+        # Bottom: trivial bound
         trivial = MathTex(
             r"\text{Trivial bound: } |K| \leq p - 1",
-            font_size=24,
+            font_size=26,
             color=GRAY,
         )
-
-        kl_group = VGroup(kl_label, kl_def, trivial)
-        kl_group.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
-        kl_group.next_to(header, DOWN, buff=0.6)
-        kl_group.set_x(0)
+        trivial.to_edge(DOWN, buff=0.8)
 
         with self.voiceover(
             text=get_phonetic_text("Now we reach the deepest ingredient of Zhang's proof. "
                  "When estimating Type two sums, after applying Cauchy-Schwarz, "
-                 "one encounters exponential sums called Kloosterman sums. "
-                 "A Kloosterman sum is a sum over the multiplicative group "
-                 "of a finite field. "
-                 "It involves the exponential of a linear term plus its inverse, "
-                 "divided by the prime p."),
+                 "one encounters exponential sums called Kloosterman sums."),
             subcaption="Now we reach the deepest ingredient of Zhang's proof. "
                  "When estimating Type two sums, after applying Cauchy-Schwarz, "
-                 "one encounters exponential sums called Kloosterman sums. "
-                 "A Kloosterman sum is a sum over the multiplicative group "
-                 "of a finite field. "
-                 "It involves the exponential of a linear term plus its inverse, "
-                 "divided by the prime p."
+                 "one encounters exponential sums called Kloosterman sums."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(kl_label), run_time=0.8)
-            self.play(FadeIn(kl_def), run_time=2.0)
+            self.play(Write(header), run_time=1.5)
+            self.play(FadeIn(kl_def), run_time=3.0)
 
         self.wait(0.5)
 
         with self.voiceover(
-            text=get_phonetic_text("The trivial bound would give p minus one, "
+            text=get_phonetic_text("A Kloosterman sum is a sum over the multiplicative group "
+                 "of a finite field. "
+                 "Inside the exponential, we have a linear term a x "
+                 "plus b times the multiplicative inverse of x, "
+                 "all divided by p."),
+            subcaption="A Kloosterman sum is a sum over the multiplicative group "
+                 "of a finite field. "
+                 "Inside the exponential, we have a linear term a x "
+                 "plus b times the multiplicative inverse of x, "
+                 "all divided by p."
+        ):
+            # Highlight linear term
+            linear_box = SurroundingRectangle(kl_def[0][4:6], color=TEAL, buff=0.05, stroke_width=2)
+            linear_label.next_to(linear_box, UP, buff=0.15)
+            self.play(Create(linear_box), FadeIn(linear_label), run_time=1.5)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("Each term is a complex number on the unit circle. "
+                 "As x varies, these complex numbers point in different directions "
+                 "and cancel each other out."),
+            subcaption="Each term is a complex number on the unit circle. "
+                 "As x varies, these complex numbers point in different directions "
+                 "and cancel each other out."
+        ):
+            # Highlight inverse term
+            inverse_box = SurroundingRectangle(kl_def[0][7:12], color=GOLD, buff=0.05, stroke_width=2)
+            inverse_label.next_to(inverse_box, DOWN, buff=0.15)
+            self.play(Create(inverse_box), FadeIn(inverse_label), run_time=1.5)
+
+            # Show cancellation visualization: unit circle with vectors
+            circle = Circle(radius=1.0, color=WHITE, stroke_width=1)
+            circle_label = Tex(r"Unit circle in $\mathbb{C}$", font_size=16, color=GRAY)
+            circle_label.next_to(circle, DOWN, buff=0.15)
+
+            # Create several arrows pointing in different directions
+            angles = [0.3, 1.2, 2.5, 3.8, 4.7, 5.5]
+            vec_colors = [RED, BLUE, GREEN, YELLOW, PURPLE, TEAL]
+            vectors = VGroup()
+            for angle, color in zip(angles, vec_colors):
+                arrow = Arrow(
+                    ORIGIN,
+                    1.0 * np.array([np.cos(angle), np.sin(angle), 0]),
+                    color=color,
+                    stroke_width=2,
+                    buff=0,
+                    max_tip_length_to_length_ratio=0.15,
+                )
+                vectors.add(arrow)
+
+            cancel_note = Tex(r"Vectors point in different directions $\Rightarrow$ cancellation", font_size=18, color=TEAL)
+            cancel_note.next_to(circle_label, DOWN, buff=0.2)
+
+            vis_group = VGroup(circle, circle_label, vectors, cancel_note)
+            vis_group.to_edge(RIGHT, buff=0.8).shift(UP * 0.5)
+
+            self.play(FadeIn(vis_group), run_time=2.0)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("This cancellation is what makes the sum much smaller "
+                 "than the trivial bound of p minus one. "
+                 "The trivial bound would give p minus one, "
                  "since there are p minus one terms each of size one."),
-            subcaption="The trivial bound would give p minus one, "
+            subcaption="This cancellation is what makes the sum much smaller "
+                 "than the trivial bound of p minus one. "
+                 "The trivial bound would give p minus one, "
                  "since there are p minus one terms each of size one."
         ):
-            self.play(FadeIn(trivial), run_time=1.0)
+            self.play(FadeIn(trivial), run_time=1.5)
 
         self.wait(1.0)
         clear_screen(self)
 
     # ------------------------------------------------------------------
-    # Scene 12b: Deligne's Bound — The square-root cancellation
+    # Scene 12b: Deligne's Bound — Cauchy-Schwarz to Kloosterman
     # ------------------------------------------------------------------
     def deligne_bound_part2(self):
         header = Tex(
-            r"\textbf{Step 3: Deligne's Bound on Kloosterman Sums}",
-            font_size=28,
+            r"\textbf{Step 3: From Cauchy-Schwarz to Deligne}",
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        deligne = MathTex(
-            r"|K(a, b; p)| \leq 2\sqrt{p}",
-            font_size=36,
-            color=GREEN,
+        # Left side: the pipeline
+        pipeline_label = Tex(
+            r"\textbf{The pipeline:}",
+            font_size=28,
         )
-        card, rect, content = make_theorem_card(deligne, color=GREEN, buff=0.3)
-        card.next_to(header, DOWN, buff=0.5)
-        card.set_x(0)
+        pipeline_label.to_edge(LEFT, buff=0.8).shift(UP * 2.5)
 
-        remark = Tex(
-            r"Deligne (1974) --- Weil conjectures, algebraic geometry",
+        # Step A: Type II sum
+        type2_reminder = MathTex(
+            r"\sum_{m \sim M} \sum_{n \sim N} \alpha_m \beta_n \, \psi(mn)",
             font_size=24,
+            color=GOLD,
+        )
+        type2_reminder.next_to(pipeline_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        arrow1 = Tex(r"$\downarrow$", font_size=28, color=GRAY)
+        arrow1.next_to(type2_reminder, DOWN, buff=0.1)
+
+        # Step B: Apply Cauchy-Schwarz
+        cs_label = Tex(
+            r"\textbf{Apply Cauchy-Schwarz}",
+            font_size=22,
+            color=TEAL,
+        )
+        cs_label.next_to(arrow1, DOWN, buff=0.1)
+
+        cs_note = Tex(
+            r"Square the sum $\rightarrow$ double sum over $n_1, n_2$",
+            font_size=18,
             color=GRAY,
         )
-        remark.next_to(card, DOWN, buff=0.4)
+        cs_note.next_to(cs_label, DOWN, buff=0.15, aligned_edge=LEFT)
 
-        connection = Tex(
-            r"Algebraic geometry $\rightarrow$ analytic number theory $\rightarrow$ prime gaps",
+        arrow2 = Tex(r"$\downarrow$", font_size=28, color=GRAY)
+        arrow2.next_to(cs_note, DOWN, buff=0.1)
+
+        # Step C: Reduced to Kloosterman
+        kl_reduced = MathTex(
+            r"\sum_{n_1, n_2} \cdots \sum_{c} K(c, \overline{n_1}n_2; q)",
+            font_size=22,
+            color=ORANGE,
+        )
+        kl_reduced.next_to(arrow2, DOWN, buff=0.1)
+
+        kl_note = Tex(
+            r"Kloosterman sums appear from the congruence structure",
+            font_size=18,
+            color=GRAY,
+        )
+        kl_note.next_to(kl_reduced, DOWN, buff=0.15, aligned_edge=LEFT)
+
+        arrow3 = Tex(r"$\downarrow$", font_size=28, color=GRAY)
+        arrow3.next_to(kl_note, DOWN, buff=0.1)
+
+        # Step D: Deligne's bound
+        deligne_result = MathTex(
+            r"|K(a, b; q)| \leq \tau(q) \cdot 2\sqrt{q}",
+            font_size=24,
+            color=GREEN,
+        )
+        deligne_result.next_to(arrow3, DOWN, buff=0.1)
+
+        deligne_note = Tex(
+            r"Square-root cancellation! Error $\ll q^{1/2+\epsilon}$",
+            font_size=18,
+            color=GREEN,
+        )
+        deligne_note.next_to(deligne_result, DOWN, buff=0.15, aligned_edge=LEFT)
+
+        pipeline = VGroup(
+            pipeline_label, type2_reminder, arrow1,
+            cs_label, cs_note, arrow2,
+            kl_reduced, kl_note, arrow3,
+            deligne_result, deligne_note,
+        )
+        pipeline.arrange(DOWN, aligned_edge=LEFT, buff=0.08)
+        pipeline.to_edge(LEFT, buff=0.6).shift(UP * 0.3)
+
+        # Right side: visual explanation of Cauchy-Schwarz
+        cs_explain_label = Tex(
+            r"\textbf{Why Cauchy-Schwarz works:}",
             font_size=24,
             color=TEAL,
         )
-        connection.next_to(remark, DOWN, buff=0.3)
+        cs_explain_label.to_edge(RIGHT, buff=0.8).shift(UP * 2.8)
+
+        cs_idea1 = Tex(
+            r"$\bullet$ Squaring creates correlations between shifts",
+            font_size=20,
+            color=GRAY,
+        )
+        cs_idea1.next_to(cs_explain_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        cs_idea2 = Tex(
+            r"$\bullet$ Congruence $m n_1 \equiv m n_2 \pmod q$ forces structure",
+            font_size=20,
+            color=GRAY,
+        )
+        cs_idea2.next_to(cs_idea1, DOWN, buff=0.25, aligned_edge=LEFT)
+
+        cs_idea3 = Tex(
+            r"$\bullet$ The resulting exponential sums are Kloosterman",
+            font_size=20,
+            color=GRAY,
+        )
+        cs_idea3.next_to(cs_idea2, DOWN, buff=0.25, aligned_edge=LEFT)
+
+        cs_idea4 = Tex(
+            r"$\bullet$ Deligne bounds each one by $\sqrt{q}$",
+            font_size=20,
+            color=GREEN,
+        )
+        cs_idea4.next_to(cs_idea3, DOWN, buff=0.25, aligned_edge=LEFT)
 
         with self.voiceover(
-            text=get_phonetic_text("But Deligne proved, as part of his Fields Medal work "
-                 "on the Weil conjectures, "
-                 "that these sums exhibit square-root cancellation. "
-                 "The absolute value is at most two times the square root of p. "
-                 "This is dramatically smaller than p."),
-            subcaption="But Deligne proved, as part of his Fields Medal work "
-                 "on the Weil conjectures, "
-                 "that these sums exhibit square-root cancellation. "
-                 "The absolute value is at most two times the square root of p. "
-                 "This is dramatically smaller than p."
+            text=get_phonetic_text("Now let us see how Cauchy-Schwarz and Deligne work together. "
+                 "We start with a Type two sum — a bilinear form with coefficients alpha and beta. "
+                 "The key move is to apply Cauchy-Schwarz to eliminate one set of coefficients."),
+            subcaption="Now let us see how Cauchy-Schwarz and Deligne work together. "
+                 "We start with a Type two sum — a bilinear form with coefficients alpha and beta. "
+                 "The key move is to apply Cauchy-Schwarz to eliminate one set of coefficients."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(content), Create(rect), run_time=2.0)
+            self.play(Write(header), run_time=1.5)
+            self.wait(0.3)
+            self.play(FadeIn(pipeline_label), run_time=0.8)
+            self.play(FadeIn(type2_reminder), run_time=2.0)
 
-            # Visual: bar chart comparison
-            p_val = 101
-            trivial_height = 3.0
-            deligne_height = 3.0 / (p_val ** 0.5) * 2
-
-            trivial_bar = Rectangle(
-                height=trivial_height, width=0.8,
-                fill_color=RED, fill_opacity=0.5, stroke_width=1,
-            )
-            trivial_bar_label = Tex(r"$p$", font_size=18)
-            trivial_bar_label.next_to(trivial_bar, UP, buff=0.1)
-
-            deligne_bar = Rectangle(
-                height=deligne_height, width=0.8,
-                fill_color=GREEN, fill_opacity=0.5, stroke_width=1,
-            )
-            deligne_bar_label = Tex(r"$2\sqrt{p}$", font_size=18)
-            deligne_bar_label.next_to(deligne_bar, UP, buff=0.1)
-
-            bound_vis = VGroup(trivial_bar, trivial_bar_label, deligne_bar, deligne_bar_label)
-            bound_vis.arrange(RIGHT, buff=0.5)
-            bound_vis.next_to(card, DOWN, buff=0.5)
-            bound_vis.set_x(0)
-
-            self.play(FadeIn(bound_vis), run_time=1.0)
-
-        self.wait(0.5)
+        self.wait(0.3)
 
         with self.voiceover(
-            text=get_phonetic_text("Without this bound, the error terms in Zhang's estimates "
-                 "would be too large, and the proof would fail. "
-                 "It is remarkable that a result from algebraic geometry, "
-                 "proved using etale cohomology and schemes, "
-                 "is the key to a problem about prime numbers."),
-            subcaption="Without this bound, the error terms in Zhang's estimates "
-                 "would be too large, and the proof would fail. "
-                 "It is remarkable that a result from algebraic geometry, "
-                 "proved using etale cohomology and schemes, "
-                 "is the key to a problem about prime numbers."
+            text=get_phonetic_text("Applying Cauchy-Schwarz squares the sum, "
+                 "which creates a double sum over two variables n one and n two. "
+                 "This eliminates the coefficients alpha sub m "
+                 "and forces a congruence relation between n one and n two."),
+            subcaption="Applying Cauchy-Schwarz squares the sum, "
+                 "which creates a double sum over two variables n one and n two. "
+                 "This eliminates the coefficients alpha sub m "
+                 "and forces a congruence relation between n one and n two."
         ):
-            self.play(FadeIn(remark), run_time=1.0)
-            self.play(FadeIn(connection), run_time=1.0)
+            self.play(FadeIn(arrow1), run_time=0.5)
+            self.play(FadeIn(cs_label), run_time=1.0)
+            self.play(FadeIn(cs_note), run_time=1.0)
+            self.play(FadeIn(cs_explain_label), run_time=1.0)
+            self.play(FadeIn(cs_idea1), run_time=1.0)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("The congruence structure that emerges "
+                 "is precisely what produces Kloosterman sums. "
+                 "These are exponential sums involving a linear term "
+                 "and a multiplicative inverse modulo q."),
+            subcaption="The congruence structure that emerges "
+                 "is precisely what produces Kloosterman sums. "
+                 "These are exponential sums involving a linear term "
+                 "and a multiplicative inverse modulo q."
+        ):
+            self.play(FadeIn(arrow2), run_time=0.5)
+            self.play(FadeIn(kl_reduced), run_time=2.0)
+            self.play(FadeIn(kl_note), run_time=1.0)
+            self.play(FadeIn(cs_idea2), run_time=1.0)
+            self.play(FadeIn(cs_idea3), run_time=1.0)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("And now Deligne's bound kicks in. "
+                 "Each Kloosterman sum is bounded by two times the square root of q, "
+                 "up to a small divisor function factor. "
+                 "This square-root cancellation is the critical gain "
+                 "that makes the entire argument work. "
+                 "Without it, the error terms would be too large, "
+                 "and Zhang's proof would collapse."),
+            subcaption="And now Deligne's bound kicks in. "
+                 "Each Kloosterman sum is bounded by two times the square root of q, "
+                 "up to a small divisor function factor. "
+                 "This square-root cancellation is the critical gain "
+                 "that makes the entire argument work. "
+                 "Without it, the error terms would be too large, "
+                 "and Zhang's proof would collapse."
+        ):
+            self.play(FadeIn(arrow3), run_time=0.5)
+            self.play(FadeIn(deligne_result), run_time=2.0)
+            self.play(FadeIn(deligne_note), run_time=1.0)
+            self.play(FadeIn(cs_idea4), run_time=1.0)
 
         self.wait(1.5)
         clear_screen(self)
@@ -1739,7 +2178,7 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
         step_labels = VGroup(
             Tex(r"\textbf{(1) Start with the GPY weighted sum}", font_size=26),
             MathTex(r"S = \sum_{n \leq x} \left(\sum_{i=1}^k \Lambda(n+h_i) - \rho\right) w(n)^2", font_size=24),
-            Tex(r"$\bullet$ Goal: show $S > 0$ for some admissible $\mathcal{H}$", font_size=24, color=TEAL),
+            Tex(r"$\bullet$ Goal: show $S > 0$ for some admissible $\mathcal{H}$", font_size=24),
         )
         step_labels.arrange(DOWN, aligned_edge=LEFT, buff=0.2)
         step_labels.next_to(header, DOWN, buff=0.5)
@@ -1761,13 +2200,13 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "The goal is to show this sum is positive "
                  "for some admissible tuple H. "
                  "If it is positive, then for some integer n, "
-                 "at least two of the shifted values n plus h sub i are prime."),
+                 "at least two of the shifted values n plus h i are prime."),
             subcaption="Now let us see how all the pieces fit together. "
                  "We start with the G P Y weighted sum. "
                  "The goal is to show this sum is positive "
                  "for some admissible tuple H. "
                  "If it is positive, then for some integer n, "
-                 "at least two of the shifted values n plus h sub i are prime."
+                 "at least two of the shifted values n plus h i are prime."
         ):
             self.play(Write(header), run_time=1.0)
             self.play(FadeIn(step_labels), run_time=2.5)
@@ -1785,18 +2224,26 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
         with self.voiceover(
             text=get_phonetic_text("Step two: decompose the error. "
                  "First, we restrict the sum to smooth moduli only. "
-                 "This means we only consider q whose prime factors are small. "
-                 "Then we split the remaining error terms "
-                 "into Type one sums, where one variable is long, "
-                 "and Type two sums, which have a bilinear structure."),
+                 "This means we only consider q whose prime factors are small."),
             subcaption="Step two: decompose the error. "
                  "First, we restrict the sum to smooth moduli only. "
-                 "This means we only consider q whose prime factors are small. "
-                 "Then we split the remaining error terms "
+                 "This means we only consider q whose prime factors are small."
+        ):
+            self.play(FadeIn(step_analysis[0]), run_time=0.8)
+            self.play(FadeIn(step_analysis[1]), run_time=1.0)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("Then we split the remaining error terms "
+                 "into Type one sums, where one variable is long, "
+                 "and Type two sums, which have a bilinear structure."),
+            subcaption="Then we split the remaining error terms "
                  "into Type one sums, where one variable is long, "
                  "and Type two sums, which have a bilinear structure."
         ):
-            self.play(FadeIn(step_analysis), run_time=3.0)
+            self.play(FadeIn(step_analysis[2]), run_time=1.0)
+            self.play(FadeIn(step_analysis[3]), run_time=1.0)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1825,22 +2272,30 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
             text=get_phonetic_text("Step three: estimate each type. "
                  "For Type one sums, the smooth modulus structure "
                  "lets us factor the problem using the Chinese Remainder Theorem, "
-                 "and the long variable gives us cancellation. "
-                 "For Type two sums, we apply Cauchy-Schwarz, "
-                 "which reduces the problem to bounding Kloosterman sums. "
-                 "And here we use Deligne's bound: "
-                 "the absolute value is at most two times the square root of p."),
+                 "and the long variable gives us cancellation."),
             subcaption="Step three: estimate each type. "
                  "For Type one sums, the smooth modulus structure "
                  "lets us factor the problem using the Chinese Remainder Theorem, "
-                 "and the long variable gives us cancellation. "
-                 "For Type two sums, we apply Cauchy-Schwarz, "
+                 "and the long variable gives us cancellation."
+        ):
+            self.play(Write(header), run_time=1.0)
+            self.play(FadeIn(step_estimate[0]), run_time=0.8)
+            self.play(FadeIn(step_estimate[1]), run_time=1.0)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("For Type two sums, we apply Cauchy-Schwarz, "
+                 "which reduces the problem to bounding Kloosterman sums. "
+                 "And here we use Deligne's bound: "
+                 "the absolute value is at most two times the square root of p."),
+            subcaption="For Type two sums, we apply Cauchy-Schwarz, "
                  "which reduces the problem to bounding Kloosterman sums. "
                  "And here we use Deligne's bound: "
                  "the absolute value is at most two times the square root of p."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(step_estimate), run_time=3.5)
+            self.play(FadeIn(step_estimate[2]), run_time=1.0)
+            self.play(FadeIn(step_estimate[3]), run_time=1.5)
 
         self.wait(1.0)
         clear_screen(self)
@@ -1868,23 +2323,37 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
         with self.voiceover(
             text=get_phonetic_text("Step four: putting the estimates together, "
                  "we find that the distribution level exceeds one-half "
-                 "by a tiny amount delta, about one over five hundred eighty-four. "
-                 "This is just enough to make the G P Y sum positive, "
-                 "which guarantees that there are infinitely many integers n "
-                 "such that at least two of the shifts n plus h sub i are prime. "
-                 "Since the tuple is finite, the gap between these two primes "
-                 "is bounded by the diameter of the tuple."),
+                 "by a tiny amount delta, about one over five hundred eighty-four."),
             subcaption="Step four: putting the estimates together, "
                  "we find that the distribution level exceeds one-half "
-                 "by a tiny amount delta, about one over five hundred eighty-four. "
-                 "This is just enough to make the G P Y sum positive, "
-                 "which guarantees that there are infinitely many integers n "
-                 "such that at least two of the shifts n plus h sub i are prime. "
-                 "Since the tuple is finite, the gap between these two primes "
-                 "is bounded by the diameter of the tuple."
+                 "by a tiny amount delta, about one over five hundred eighty-four."
         ):
             self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(step_conclude), run_time=4.0)
+            self.play(FadeIn(step_conclude[0]), run_time=0.8)
+            self.play(FadeIn(step_conclude[1]), run_time=1.5)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("This is just enough to make the G P Y sum positive, "
+                 "which guarantees that there are infinitely many integers n "
+                 "such that at least two of the shifts n plus h i are prime."),
+            subcaption="This is just enough to make the G P Y sum positive, "
+                 "which guarantees that there are infinitely many integers n "
+                 "such that at least two of the shifts n plus h i are prime."
+        ):
+            self.play(FadeIn(step_conclude[2]), run_time=1.5)
+            self.play(FadeIn(step_conclude[3]), run_time=1.5)
+
+        self.wait(0.5)
+
+        with self.voiceover(
+            text=get_phonetic_text("Since the tuple is finite, the gap between these two primes "
+                 "is bounded by the diameter of the tuple."),
+            subcaption="Since the tuple is finite, the gap between these two primes "
+                 "is bounded by the diameter of the tuple."
+        ):
+            self.wait(1.0)
 
         self.wait(2.0)
         clear_screen(self)
@@ -1908,11 +2377,24 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
         card.next_to(theorem_title, DOWN, buff=0.5)
         card.set_x(0)
 
-        pieces = Tex(
-            r"Smooth moduli + Type I/II + Deligne $\Rightarrow \theta > 1/2$",
-            font_size=24,
+        # Individual pieces shown one by one
+        piece1 = Tex(
+            r"$\bullet$ Smooth moduli: error terms become manageable",
+            font_size=22,
             color=TEAL,
         )
+        piece2 = Tex(
+            r"$\bullet$ Type I/II decomposition: organizes the analysis",
+            font_size=22,
+            color=TEAL,
+        )
+        piece3 = Tex(
+            r"$\bullet$ Deligne's bound: square-root cancellation",
+            font_size=22,
+            color=GREEN,
+        )
+        pieces = VGroup(piece1, piece2, piece3)
+        pieces.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
         pieces.next_to(card, DOWN, buff=0.5)
 
         sub_note = Tex(
@@ -1933,18 +2415,31 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
         self.wait(0.5)
 
         with self.voiceover(
-            text=get_phonetic_text("The smooth moduli restriction makes the error terms manageable. "
-                 "The Type one and Type two decomposition organizes the analysis. "
-                 "Deligne's bound provides the crucial square-root cancellation "
-                 "for the hardest terms."),
-            subcaption="The smooth moduli restriction makes the error terms manageable. "
-                 "The Type one and Type two decomposition organizes the analysis. "
-                 "Deligne's bound provides the crucial square-root cancellation "
-                 "for the hardest terms."
+            text=get_phonetic_text("The smooth moduli restriction makes the error terms manageable."),
+            subcaption="The smooth moduli restriction makes the error terms manageable."
         ):
             self.play(FadeIn(content), Create(rect), run_time=2.0)
+            self.play(FadeIn(piece1), run_time=1.0)
 
-        self.wait(1.0)
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("The Type one and Type two decomposition organizes the analysis."),
+            subcaption="The Type one and Type two decomposition organizes the analysis."
+        ):
+            self.play(FadeIn(piece2), run_time=1.0)
+
+        self.wait(0.3)
+
+        with self.voiceover(
+            text=get_phonetic_text("Deligne's bound provides the crucial square-root cancellation "
+                 "for the hardest terms."),
+            subcaption="Deligne's bound provides the crucial square-root cancellation "
+                 "for the hardest terms."
+        ):
+            self.play(FadeIn(piece3), run_time=1.0)
+
+        self.wait(0.5)
 
         with self.voiceover(
             text=get_phonetic_text("And the result is that the distribution level exceeds one-half "
@@ -1958,7 +2453,14 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "which guarantees that some pair of shifts "
                  "is prime infinitely often."
         ):
-            self.play(FadeIn(pieces), run_time=1.5)
+            self.play(
+                rect.animate.set_stroke(YELLOW, width=6),
+                run_time=0.5,
+            )
+            self.play(
+                rect.animate.set_stroke(GREEN, width=4),
+                run_time=0.5,
+            )
 
         self.wait(0.5)
 
@@ -1970,68 +2472,82 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "This was the first time anyone proved "
                  "that prime gaps are bounded by any finite number."
         ):
-            self.play(
-                rect.animate.set_stroke(YELLOW, width=6),
-                run_time=0.5,
-            )
-            self.play(
-                rect.animate.set_stroke(GREEN, width=4),
-                run_time=0.5,
-            )
             self.play(FadeIn(sub_note), run_time=1.0)
 
         self.wait(1.5)
         clear_screen(self)
 
     # ------------------------------------------------------------------
-    # Scene 15a: Conclusion — Polymath and Maynard
+    # Scene 15: Afterstory — Polymath, Maynard, and open problems
     # ------------------------------------------------------------------
     def conclusion_part1(self):
         header = Tex(
-            r"\textbf{Aftermath}",
-            font_size=32,
+            r"\textbf{Afterstory}",
+            font_size=36,
             color=BLUE,
         ).to_edge(UP, buff=0.5)
 
-        poly = MathTex(
-            r"\text{Polymath8} \rightarrow \text{Bound } 4,\!680",
+        # Left: timeline of bounds
+        timeline_label = Tex(
+            r"\textbf{Improving the bound:}",
             font_size=28,
         )
-        may = MathTex(
-            r"\text{Maynard (2013)} \rightarrow \text{Bound } 246",
+        timeline_label.to_edge(LEFT, buff=0.8).shift(UP * 2.5)
+
+        zhang_line = Tex(
+            r"\textbf{Zhang (2014):} $H \leq 70,\!000,\!000$",
+            font_size=24,
+        )
+        zhang_line.next_to(timeline_label, DOWN, buff=0.3, aligned_edge=LEFT)
+
+        polymath_line = Tex(
+            r"\textbf{Polymath8:} $H \leq 4,\!680$",
+            font_size=24,
+            color=TEAL,
+        )
+        polymath_line.next_to(zhang_line, DOWN, buff=0.25, aligned_edge=LEFT)
+
+        maynard_line = Tex(
+            r"\textbf{Maynard (2013):} $H \leq 600$",
+            font_size=24,
+            color=GREEN,
+        )
+        maynard_line.next_to(polymath_line, DOWN, buff=0.25, aligned_edge=LEFT)
+
+        maynard_refined = Tex(
+            r"\textbf{Maynard + Zhang:} $H \leq 246$",
+            font_size=24,
+            color=GREEN,
+        )
+        maynard_refined.next_to(maynard_line, DOWN, buff=0.25, aligned_edge=LEFT)
+
+        # Right: open problems
+        open_label = Tex(
+            r"\textbf{Where we stand:}",
             font_size=28,
         )
+        open_label.to_edge(RIGHT, buff=0.8).shift(UP * 2.5)
 
-        items = VGroup(poly, may)
-        items.arrange(DOWN, aligned_edge=LEFT, buff=0.4)
-        items.next_to(header, DOWN, buff=0.5)
-        items.set_x(0)
+        geh_line = Tex(
+            r"Under \textbf{Generalized Elliott--Halberstam}: $H \leq 6$",
+            font_size=22,
+            color=TEAL,
+        )
+        geh_line.next_to(open_label, DOWN, buff=0.3, aligned_edge=LEFT)
 
-        # Timeline visualization
-        timeline_header = Tex(r"\textbf{Bound over time:}", font_size=24, color=TEAL)
-        timeline_header.to_edge(DOWN, buff=1.5)
+        twin_line = MathTex(
+            r"\text{Open: } \liminf_{n \to \infty} (p_{n+1} - p_n) = 2",
+            font_size=26,
+            color=YELLOW,
+        )
+        twin_line.next_to(geh_line, DOWN, buff=0.5, aligned_edge=LEFT)
 
-        bounds = [
-            (r"Zhang 2014", 70000000),
-            (r"Polymath8", 4680),
-            (r"Maynard", 246),
-        ]
-        timeline_bars = VGroup()
-        for i, (label, bound) in enumerate(bounds):
-            height = 0.3 + 2.0 * (1 - (bound ** (1/8)) / (70000000 ** (1/8)))
-            bar = Rectangle(
-                height=max(0.3, height), width=0.6,
-                fill_color=BLUE, fill_opacity=0.6, stroke_width=1,
-            )
-            lbl = Tex(label, font_size=14)
-            lbl.next_to(bar, DOWN, buff=0.1)
-            val = Tex(str(bound), font_size=12)
-            val.next_to(bar, UP, buff=0.1)
-            timeline_bars.add(VGroup(bar, lbl, val))
-
-        timeline_bars.arrange(RIGHT, buff=0.4, aligned_edge=DOWN)
-        timeline_bars.next_to(timeline_header, UP, buff=0.2)
-        timeline_bars.set_x(0)
+        twin_note = Tex(
+            r"The Twin Prime Conjecture remains wide open",
+            font_size=20,
+            color=GRAY,
+        )
+        twin_note.next_to(twin_line, DOWN, buff=0.2, aligned_edge=LEFT)
 
         with self.voiceover(
             text=get_phonetic_text("Zhang's result sparked an explosion of activity. "
@@ -2043,79 +2559,47 @@ class ZhangBoundedGaps(LatentPrelude, VoiceoverScene):
                  "quickly improved the bound from seventy million "
                  "down to four thousand six hundred eighty."
         ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(poly, shift=RIGHT * 0.3), run_time=1.5)
+            self.play(Write(header), run_time=1.5)
+            self.wait(0.3)
+            self.play(FadeIn(timeline_label), run_time=0.8)
+            self.play(FadeIn(zhang_line), run_time=1.5)
+            self.play(FadeIn(polymath_line), run_time=1.0)
 
-        self.wait(0.5)
+        self.wait(0.3)
 
         with self.voiceover(
             text=get_phonetic_text("Then James Maynard, working independently, "
                  "introduced a new sieve method "
                  "that brought the bound down to six hundred, "
                  "and later to two hundred forty-six "
-                 "when combined with Zhang's ideas."),
+                 "when combined with Zhang's smooth moduli idea."),
             subcaption="Then James Maynard, working independently, "
                  "introduced a new sieve method "
                  "that brought the bound down to six hundred, "
                  "and later to two hundred forty-six "
-                 "when combined with Zhang's ideas."
+                 "when combined with Zhang's smooth moduli idea."
         ):
-            self.play(FadeIn(may, shift=RIGHT * 0.3), run_time=2.0)
-            self.play(FadeIn(timeline_header), run_time=0.8)
-            for bar_group in timeline_bars:
-                self.play(FadeIn(bar_group), run_time=0.5)
-
-        self.wait(1.0)
-        clear_screen(self)
-
-    # ------------------------------------------------------------------
-    # Scene 15b: Conclusion — GEH and open problem
-    # ------------------------------------------------------------------
-    def conclusion_part2(self):
-        header = Tex(
-            r"\textbf{Aftermath}",
-            font_size=32,
-            color=BLUE,
-        ).to_edge(UP, buff=0.5)
-
-        eh = MathTex(
-            r"\text{Under GEH: Bound } 6",
-            font_size=26,
-            color=TEAL,
-        )
-        twin = MathTex(
-            r"\text{Open: } \liminf (p_{n+1} - p_n) = 2",
-            font_size=30,
-            color=YELLOW,
-        )
-
-        items = VGroup(eh, twin)
-        items.arrange(DOWN, aligned_edge=LEFT, buff=0.5)
-        items.next_to(header, DOWN, buff=0.5)
-        items.set_x(0)
-
-        with self.voiceover(
-            text=get_phonetic_text("The current record is two hundred forty-six. "
-                 "Assuming the generalized Elliott Halberstam conjecture, "
-                 "it can be reduced to six."),
-            subcaption="The current record is two hundred forty-six. "
-                 "Assuming the generalized Elliott Halberstam conjecture, "
-                 "it can be reduced to six."
-        ):
-            self.play(Write(header), run_time=1.0)
-            self.play(FadeIn(eh, shift=RIGHT * 0.3), run_time=1.5)
+            self.play(FadeIn(maynard_line), run_time=1.0)
+            self.play(FadeIn(maynard_refined), run_time=1.0)
 
         self.wait(0.5)
 
         with self.voiceover(
-            text=get_phonetic_text("But the original Twin Prime Conjecture, "
-                 "which claims the bound is exactly two, "
+            text=get_phonetic_text("Assuming the Generalized Elliott Halberstam conjecture, "
+                 "the bound can be reduced to six. "
+                 "But the original Twin Prime Conjecture, "
+                 "which claims the gap is exactly two, "
                  "remains wide open."),
-            subcaption="But the original Twin Prime Conjecture, "
-                 "which claims the bound is exactly two, "
+            subcaption="Assuming the Generalized Elliott Halberstam conjecture, "
+                 "the bound can be reduced to six. "
+                 "But the original Twin Prime Conjecture, "
+                 "which claims the gap is exactly two, "
                  "remains wide open."
         ):
-            self.play(FadeIn(twin, shift=RIGHT * 0.3), run_time=1.5)
+            self.play(FadeIn(open_label), run_time=1.0)
+            self.play(FadeIn(geh_line), run_time=1.5)
+            self.play(FadeIn(twin_line), run_time=2.0)
+            self.play(FadeIn(twin_note), run_time=1.0)
 
         self.wait(1.5)
         clear_screen(self)

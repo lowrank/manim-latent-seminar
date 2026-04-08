@@ -20,7 +20,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
     def construct(self):
         self.set_speech_service(KokoroService(voice="af_heart", lang="en-us"))
-#        self.play_prelude()
+        self.play_prelude()
 
         # === Intro / Title Card ===
         self.intro()
@@ -934,7 +934,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=GREEN,
             buff=0.3,
         )
-        dirichlet_card.next_to(header, DOWN, buff=0.8).set_x(0)
+        dirichlet_card.next_to(header, DOWN, buff=1.8).set_x(0)
 
         with self.voiceover(
             text=get_phonetic_text("To make the G P Y sum positive, "
@@ -1092,12 +1092,12 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         with self.voiceover(
             text=get_phonetic_text("Now we can define the level of distribution precisely. "
-                 "The error term E of x comma q comma a "
+                 "The error term E of x, q, A- "
                  "measures the deviation between the actual count of primes "
                  "in the progression a mod q "
                  "and the expected count pi of x over phi of q."),
             subcaption="Now we can define the level of distribution precisely. "
-                 "The error term E of x comma q comma a "
+                 "The error term E of x , q,  a "
                  "measures the deviation between the actual count of primes "
                  "in the progression a mod q "
                  "and the expected count pi of x over phi of q."
@@ -1163,7 +1163,7 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
             color=RED,
         )
         bv_text = MathTex(
-            r"\text{Bombieri--Vinogradov: } \theta = 1/2",
+            r"\text{Bombieri--Vinogradov: } \forall \theta < 1/2",
             font_size=28,
         )
         bv_formula = MathTex(
@@ -1199,13 +1199,13 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
 
         with self.voiceover(
             text=get_phonetic_text("But the best known result is the Bombieri Vinogradov theorem, "
-                 "which gives exactly one-half. "
+                 "which works exactly under one-half. "
                  "Let us understand what this theorem says. "
                  "It bounds the average error in the prime number theorem "
                  "for arithmetic progressions, "
                  "summed over all moduli q up to x to the theta."),
             subcaption="But the best known result is the Bombieri Vinogradov theorem, "
-                 "which gives exactly one-half. "
+                 "which works exactly under  one-half. "
                  "Let us understand what this theorem says. "
                  "It bounds the average error in the prime number theorem "
                  "for arithmetic progressions, "
@@ -2135,9 +2135,8 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         step_analysis.arrange(DOWN, aligned_edge=LEFT, buff=0.15)
 
         main_content = VGroup(step_labels, step_analysis)
-        main_content.arrange(DOWN, buff=0.5)
-        main_content.next_to(header, DOWN, buff=0.5).set_x(0)
-        center_mathtex(main_content)
+        main_content.arrange(DOWN, buff=0.5, aligned_edge=LEFT)
+        main_content.next_to(header, DOWN, buff=0.5)
 
         with self.voiceover(
             text=get_phonetic_text("Now let us see how all the pieces fit together. "
@@ -2424,9 +2423,9 @@ class BoundedGapsProof(LatentPrelude, VoiceoverScene):
         ).to_edge(UP, buff=0.5)
 
         left_title = Tex(r"\textbf{Improving the bound:}", font_size=26)
-        left_zhang = Tex(r"Zhang (2014): $H \leq 70,\!000,\!000$", font_size=20)
+        left_zhang = Tex(r"Zhang (arXiv in 04/2013, published in 2014): $H \leq 70,\!000,\!000$", font_size=20)
         left_poly = Tex(r"Polymath8: $H \leq 4,\!680$", font_size=20, color=TEAL)
-        left_maynard = Tex(r"Maynard (2013): $H \leq 600$", font_size=20, color=GREEN)
+        left_maynard = Tex(r"Maynard (arXiv in 11/2013, published in 2015): $H \leq 600$", font_size=20, color=GREEN)
         left_combined = Tex(r"Maynard + Zhang: $H \leq 246$", font_size=20, color=GREEN)
 
         left_items = VGroup(left_title, left_zhang, left_poly, left_maynard, left_combined)

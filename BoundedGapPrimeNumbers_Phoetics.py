@@ -34,7 +34,7 @@ PRONUNCIATIONS = {
     "Dirichlet": "Dee-ree-shlay",
     "Kloosterman": "Kloos-ter-mahn",
     "Cauchy": "Co-shee",
-    "Schwarz": "Shworts",
+    "Schwarz": "She-worts",
     "Weil": "Vile",
     "Polymath": "Pol-ee-math",
 

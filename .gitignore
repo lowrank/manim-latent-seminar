@@ -6,7 +6,7 @@ materials/
 
 # claude
 session*
-
+session_hist/
 # prelude music
 *.mp3
 

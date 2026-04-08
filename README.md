@@ -9,5 +9,6 @@ Current list of topics in the video list:
 3. Sum of Squares
 4. Sensitivity Conjecture
 5. Lower Bound of Off-diagonal Ramsey Numbers
+6. Bounded Gap of Prime Numbers
 
 To run the scripts, the installation of manim is required (Follow the [instructions](https://docs.manim.community/en/stable/installation/conda.html)). 
